@@ -124,11 +124,11 @@ To find out the version of this release and information about it, see [www/CHANG
 ##Building
 
 You must have the following software installed to build P2P Sockets:
-	* JDK 1.4+
-	* Ant 1.6.0
+* JDK 1.4+
+* Ant 1.6.0
 
 You must set the following environment variables to build the source:
-	* JAVA_HOME - The location of your Java SDK
+* JAVA_HOME - The location of your Java SDK
 
 Type 'ant help' for information on available Ant tasks.
 
