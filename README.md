@@ -128,7 +128,6 @@ You must have the following software installed to build P2P Sockets:
 	* Ant 1.6.0
 
 You must set the following environment variables to build the source:
-	//I'm not sure if this is true any longer ???
 	* JAVA_HOME - The location of your Java SDK
 
 Type 'ant help' for information on available Ant tasks.
