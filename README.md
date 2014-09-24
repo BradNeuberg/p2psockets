@@ -118,7 +118,7 @@ To find out the version of this release and information about it, see [www/CHANG
 ###Vikas Sodhani
 * Bug testing
 
-###John Mitchell (jfm_NO_SPAM_SPAM_IS_EVIL@minioak.com)
+###John Mitchell
 * Submitted bug patch for P2PNetwork class
 
 ##Building
