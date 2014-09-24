@@ -130,3 +130,17 @@ You must set the following environment variables to build the source:
 	* JAVA_HOME - The location of your Java SDK
 
 Type 'ant help' for information on available Ant tasks.
+
+##Downloads
+
+###Stable Releases
+
+* P2P Sockets 2.0-r2 - [p2psockets-2.0-r2.zip](https://web.archive.org/web/20060503110718/http://p2psockets.jxta.org/releases/stable/p2psockets-2_0-r2.zip) - Corrects bug in virtual ip address representation.
+* P2P Sockets 2.0 - [p2psockets-2.0.zip](https://web.archive.org/web/20060503110718/http://p2psockets.jxta.org/releases/stable/p2psockets-2_0.zip) - Major new release. Includes complete auto profiling for peers and an active node lookup system.
+* P2P Sockets 1.2 - [p2psockets-1_2.zip](https://web.archive.org/web/20060503110718/http://p2psockets.jxta.org/releases/stable/p2psockets-1_2.zip) - Important new release for P2P Sockets, 1.2 features great improvements in speed and reliability. Many bugs have been driven from the I/O code to make this the most dependable P2PSockets release yet.
+
+###Unstable Releases
+
+* P2P Sockets 1.1.4 - [p2psockets-1_1_4.zip](https://web.archive.org/web/20060503110718/http://p2psockets.jxta.org/releases/unstable/p2psockets-1_1_4.zip) - Major new release for P2P Sockets, 1.1.4. A critical bug was preventing P2P Sockets from working with the latest version of JXTA and the Sun JXTA public rendezvous servers; this has now been fixed. P2P Sockets is now ported to JXTA 2.3.1; is significantly faster both in startup and in resolving P2P sockets, server sockets, and web sites; embeds the JXTA profiler rather than its own for automatic peer configuration; features a much refactored simpler and easier internal design; features completely revamped and up-to-date documentation, tutorials, and presentations; has ant tasks for easily starting P2P WikiWikis; and is now ported to the 2.0.2 version of Apache Commons HTTP-Client.
+* P2P Sockets 1.1.2 - [p2psockets-1_1_2-2004-03-02.zip](https://web.archive.org/web/20060503110718/http://p2psockets.jxta.org/releases/unstable/p2psockets-1_1_2-2004-03-02.zip) - Offers a few bug fixes and additions to the P2PNetwork class.
+* P2P Sockets 1.1.1 - [p2psockets-1_1_1-2004-02-09.zip](https://web.archive.org/web/20060503110718/http://p2psockets.jxta.org/releases/unstable/p2psockets-1_1_1-2004-02-09.zip) - Offers significant new features in ease of deployment, upgrades to other key packages used by P2P Sockets (such as JXTA and Jetty), and new features to help with P2P Socket's project management. This release won't perform autoconfiguration correctly until a JXTA bootstrap peer is deployed, which should happen in either a few days or possibly a few weeks. Some documentation tasks remain to be finished (such as upgrading the tutorials on how to use this new release).
