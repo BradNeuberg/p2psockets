@@ -31,6 +31,8 @@ Two tutorials are available to get you started:
 
 There are also more tutorials in [www/docs/tutorials](www/docs/tutorials).
 
+The original web site for P2P Sockets is [available here](https://web.archive.org/web/20060503110718/http://p2psockets.jxta.org).
+
 ##Technical Details
 
 Are you interested in:
