@@ -93,7 +93,7 @@ To find out the version of this release and information about it, see [www/CHANG
 * Initial project management
 * Architecture and coding
 
-###Alex Lynch (jxlynch@users.sf.net)
+###Alex Lynch
 * Became project manager after Brad; no longer managing project
 * Improved reliability
 * Many bug fixes
