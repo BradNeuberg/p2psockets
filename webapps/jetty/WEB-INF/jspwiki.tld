@@ -1,0 +1,396 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE taglib PUBLIC "-//Sun Microsystems, Inc.//DTD JSP Tag Library 1.1//EN"
+                        "http://java.sun.com/dtd/web-jsptaglibrary_1_1.dtd">
+
+<!--
+     JSPWiki tag libraries are defined here.
+
+     Note that we support only the 1.1 spec for now,
+     simply because there is no reason to break compatibility.
+ -->
+<taglib>
+  <tlibversion>1.0</tlibversion>
+  <jspversion>1.1</jspversion>
+  <shortname>jspwiki</shortname>
+
+  <tag>
+    <name>AttachmentsIterator</name>
+    <tagclass>com.ecyrd.jspwiki.tags.AttachmentsIteratorTag</tagclass>
+    <teiclass>com.ecyrd.jspwiki.tags.AttachmentsIteratorInfo</teiclass>
+    <bodycontent>JSP</bodycontent>
+    <attribute>
+       <name>id</name>
+    </attribute>
+  </tag>  
+
+  <tag>
+    <name>Author</name>
+    <tagclass>com.ecyrd.jspwiki.tags.AuthorTag</tagclass>
+    <bodycontent>empty</bodycontent>
+  </tag>  
+
+  <tag>
+    <name>Breadcrumbs</name>
+    <tagclass>com.ecyrd.jspwiki.tags.BreadcrumbsTag</tagclass>
+    <bodycontent>empty</bodycontent>
+    <attribute>
+       <name>maxpages</name>
+       <required>false</required><!-- the default value is 10 -->
+    </attribute>
+    <attribute>
+       <name>separator</name>
+       <required>false</required><!-- the default value is " | " -->
+    </attribute>
+  </tag>
+
+  <tag>
+    <name>Calendar</name>
+    <tagclass>com.ecyrd.jspwiki.tags.CalendarTag</tagclass>
+    <bodycontent>empty</bodycontent>
+    <attribute>
+       <name>pageformat</name>
+    </attribute>
+    <attribute>
+       <name>urlformat</name>
+    </attribute>
+  </tag>  
+
+  <tag>
+    <name>CheckLock</name>
+    <tagclass>com.ecyrd.jspwiki.tags.CheckLockTag</tagclass>
+    <teiclass>com.ecyrd.jspwiki.tags.CheckLockInfo</teiclass>
+    <bodycontent>JSP</bodycontent>
+    <attribute>
+       <name>mode</name>
+    </attribute>
+    <attribute>
+       <name>id</name>
+    </attribute>
+  </tag>  
+
+  <tag>
+    <name>CheckRequestContext</name>
+    <tagclass>com.ecyrd.jspwiki.tags.CheckRequestContextTag</tagclass>
+    <bodycontent>JSP</bodycontent>
+    <attribute>
+       <name>context</name>
+    </attribute>
+  </tag>  
+
+  <tag>
+    <name>CheckVersion</name>
+    <tagclass>com.ecyrd.jspwiki.tags.CheckVersionTag</tagclass>
+    <bodycontent>JSP</bodycontent>
+    <attribute>
+       <name>mode</name>
+    </attribute>
+  </tag>  
+
+  <tag>
+    <name>ContentEncoding</name>
+    <tagclass>com.ecyrd.jspwiki.tags.ContentEncodingTag</tagclass>
+    <bodycontent>empty</bodycontent>
+  </tag>
+
+  <tag>
+    <name>DiffLink</name>
+    <tagclass>com.ecyrd.jspwiki.tags.DiffLinkTag</tagclass>
+    <bodycontent>JSP</bodycontent>
+    <attribute>
+       <name>page</name>
+    </attribute>
+    <attribute>
+       <name>format</name>
+    </attribute>
+    <attribute>
+       <name>version</name>
+       <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+       <name>newVersion</name>
+       <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>  
+
+  <tag>
+    <name>EditLink</name>
+    <tagclass>com.ecyrd.jspwiki.tags.EditLinkTag</tagclass>
+    <bodycontent>JSP</bodycontent>
+    <attribute>
+       <name>page</name>
+    </attribute>
+    <attribute>
+       <name>format</name>
+    </attribute>
+    <attribute>
+       <name>version</name>
+       <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>  
+
+  <tag>
+    <name>HasAttachments</name>
+    <tagclass>com.ecyrd.jspwiki.tags.HasAttachmentsTag</tagclass>
+    <bodycontent>JSP</bodycontent>
+  </tag>  
+
+  <tag>
+    <name>HistoryIterator</name>
+    <tagclass>com.ecyrd.jspwiki.tags.HistoryIteratorTag</tagclass>
+    <teiclass>com.ecyrd.jspwiki.tags.HistoryIteratorInfo</teiclass>
+    <bodycontent>JSP</bodycontent>
+    <attribute>
+       <name>id</name>
+    </attribute>
+  </tag>  
+
+  <tag>
+    <name>Include</name>
+    <tagclass>com.ecyrd.jspwiki.tags.IncludeTag</tagclass>
+    <bodycontent>empty</bodycontent>
+    <attribute>
+       <name>page</name>
+       <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>  
+
+  <tag>
+    <name>InsertDiff</name>
+    <tagclass>com.ecyrd.jspwiki.tags.InsertDiffTag</tagclass>
+    <bodycontent>JSP</bodycontent>
+    <attribute>
+       <name>page</name>
+    </attribute>
+  </tag>  
+
+  <tag>
+    <name>InsertPage</name>
+    <tagclass>com.ecyrd.jspwiki.tags.InsertPageTag</tagclass>
+    <bodycontent>empty</bodycontent>
+    <attribute>
+       <name>page</name>
+    </attribute>
+    <attribute>
+       <name>mode</name>
+    </attribute>
+  </tag>  
+
+  <tag>
+    <name>LinkTo</name>
+    <tagclass>com.ecyrd.jspwiki.tags.LinkToTag</tagclass>
+    <bodycontent>JSP</bodycontent>
+    <attribute>
+       <name>page</name>
+    </attribute>
+    <attribute>
+       <name>format</name>
+    </attribute>
+    <attribute>
+       <name>version</name>
+       <rtexprvalue>true</rtexprvalue>
+    </attribute>    
+  </tag>  
+
+  <tag>
+    <name>LinkToParent</name>
+    <tagclass>com.ecyrd.jspwiki.tags.LinkToParentTag</tagclass>
+    <bodycontent>JSP</bodycontent>
+    <attribute>
+       <name>page</name>
+    </attribute>
+    <attribute>
+       <name>format</name>
+    </attribute>
+    <attribute>
+       <name>version</name>
+       <rtexprvalue>true</rtexprvalue>
+    </attribute>    
+  </tag>  
+
+  <tag>
+    <name>NoSuchPage</name>
+    <tagclass>com.ecyrd.jspwiki.tags.NoSuchPageTag</tagclass>
+    <bodycontent>JSP</bodycontent>
+    <attribute>
+       <name>page</name>
+    </attribute>
+  </tag>  
+
+  <tag>
+    <name>PageExists</name>
+    <tagclass>com.ecyrd.jspwiki.tags.PageExistsTag</tagclass>
+    <bodycontent>JSP</bodycontent>
+    <attribute>
+       <name>page</name>
+    </attribute>
+  </tag>  
+
+  <tag>
+    <name>PageInfoLink</name>
+    <tagclass>com.ecyrd.jspwiki.tags.PageInfoLinkTag</tagclass>
+    <bodycontent>JSP</bodycontent>
+    <attribute>
+       <name>page</name>
+    </attribute>
+    <attribute>
+       <name>format</name>
+    </attribute>
+  </tag>
+
+  
+  <tag>
+    <name>PageDate</name>
+    <tagclass>com.ecyrd.jspwiki.tags.PageDateTag</tagclass>
+    <bodycontent>empty</bodycontent>
+  </tag>
+  
+  <tag>
+    <name>PageName</name>
+    <tagclass>com.ecyrd.jspwiki.tags.PageNameTag</tagclass>
+    <bodycontent>empty</bodycontent>
+  </tag>
+
+  <tag>
+    <name>PageSize</name>
+    <tagclass>com.ecyrd.jspwiki.tags.PageSizeTag</tagclass>
+    <bodycontent>empty</bodycontent>
+  </tag>
+
+  <tag>
+    <name>PageType</name>
+    <tagclass>com.ecyrd.jspwiki.tags.PageTypeTag</tagclass>
+    <bodycontent>JSP</bodycontent>
+    <attribute>
+       <name>type</name>
+    </attribute>
+  </tag>
+
+  <tag>
+    <name>PageVersion</name>
+    <tagclass>com.ecyrd.jspwiki.tags.PageVersionTag</tagclass>
+    <bodycontent>JSP</bodycontent>
+  </tag>
+
+  <tag>
+    <name>ParentPageName</name>
+    <tagclass>com.ecyrd.jspwiki.tags.ParentPageNameTag</tagclass>
+    <bodycontent>empty</bodycontent>
+  </tag>
+
+  <tag>
+    <name>Permission</name>
+    <tagclass>com.ecyrd.jspwiki.tags.PermissionTag</tagclass>
+    <bodycontent>JSP</bodycontent>
+    <attribute>
+       <name>permission</name>
+    </attribute>
+  </tag>
+
+  <tag>
+    <name>Plugin</name>
+    <tagclass>com.ecyrd.jspwiki.tags.PluginTag</tagclass>
+    <bodycontent>empty</bodycontent>
+    <attribute>
+       <name>plugin</name>
+       <required>true</required>
+    </attribute>
+    <attribute>
+       <name>args</name>
+       <required>true</required>
+    </attribute>
+  </tag>
+
+  <tag>
+    <name>RSSLink</name>
+    <tagclass>com.ecyrd.jspwiki.tags.RSSLinkTag</tagclass>
+    <bodycontent>empty</bodycontent>
+  </tag>
+
+  <tag>
+    <name>RSSImageLink</name>
+    <tagclass>com.ecyrd.jspwiki.tags.RSSImageLinkTag</tagclass>
+    <bodycontent>empty</bodycontent>
+    <attribute>
+       <name>title</name>
+    </attribute>
+  </tag>
+
+  <tag>
+    <name>RSSUserlandLink</name>
+    <tagclass>com.ecyrd.jspwiki.tags.RSSCoffeeCupLinkTag</tagclass>
+    <bodycontent>empty</bodycontent>
+    <attribute>
+       <name>title</name>
+    </attribute>
+  </tag>
+
+  <tag>
+    <name>SearchResultIterator</name>
+    <tagclass>com.ecyrd.jspwiki.tags.SearchResultIteratorTag</tagclass>
+    <teiclass>com.ecyrd.jspwiki.tags.SearchResultIteratorInfo</teiclass>
+    <bodycontent>JSP</bodycontent>
+    <attribute>
+       <name>id</name>
+    </attribute>
+    <attribute>
+       <name>maxItems</name>
+       <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+       <name>list</name>
+       <required>true</required>
+       <rtexprvalue>true</rtexprvalue>
+    </attribute>
+
+  </tag>  
+
+  <tag>
+    <name>TemplateDir</name>
+    <tagclass>com.ecyrd.jspwiki.tags.TemplateDirTag</tagclass>
+    <bodycontent>empty</bodycontent>
+  </tag>
+
+  <tag>
+    <name>Translate</name>
+    <tagclass>com.ecyrd.jspwiki.tags.TranslateTag</tagclass>
+    <bodycontent>JSP</bodycontent>
+  </tag>
+
+  <tag>
+    <name>UploadLink</name>
+    <tagclass>com.ecyrd.jspwiki.tags.UploadLinkTag</tagclass>
+    <bodycontent>JSP</bodycontent>
+    <attribute>
+       <name>page</name>
+    </attribute>
+    <attribute>
+       <name>format</name>
+    </attribute>
+  </tag>
+
+  <tag>
+    <name>UserName</name>
+    <tagclass>com.ecyrd.jspwiki.tags.UserNameTag</tagclass>
+    <bodycontent>empty</bodycontent>
+  </tag>
+
+  <tag>
+    <name>UserCheck</name>
+    <tagclass>com.ecyrd.jspwiki.tags.UserCheckTag</tagclass>
+    <bodycontent>JSP</bodycontent>
+    <attribute>
+       <name>exists</name>
+    </attribute>
+  </tag>
+
+  <tag>
+    <name>Variable</name>
+    <tagclass>com.ecyrd.jspwiki.tags.VariableTag</tagclass>
+    <bodycontent>empty</bodycontent>
+    <attribute>
+       <name>var</name>
+       <required>true</required>
+    </attribute>
+  </tag>
+
+</taglib>

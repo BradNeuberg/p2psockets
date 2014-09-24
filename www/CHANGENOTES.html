@@ -1,0 +1,402 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta content="text/html;charset=ISO-8859-1" http-equiv="Content-Type">
+  <title>Change Notes</title>
+</head>
+<body>
+<h1>Change Notes</h1>
+<u><b>2.0-r2 - Stable Series<br>
+</b></u>
+<ul>
+  <li>Corrected previously dormant bug involving discrepancy between
+signed and unsigned bytes in the vertual ip address<br>
+  </li>
+  <li>Refitted internal address representation from int to byte[]</li>
+</ul>
+<u><b>2.0 - Stable Series<br>
+</b></u>
+<ul>
+  <li>Added auto peer configuration for autoSignin() methods</li>
+  <li>Removed gui config from users view</li>
+  <li>Allows multiple p2ps apps to run in the same dir</li>
+  <li>Added advertisement hunter thread for very efficient server lookup</li>
+  <li>Fixed bugs in socket close()</li>
+</ul>
+<u><b>1.2 - Stable Series<br>
+</b></u>
+<ul>
+  <li>Great improvements in speed and reliability</li>
+  <li>Added optional PeerGroup argument to P2PNetwork#signin()</li>
+  <li>Added P2PNetwork#getPeerGroup() and deprecated getNetPeerGroup()</li>
+  <li>Correct P2PInetAddress returned from
+P2PSocket.getRemoteSocketAddress()</li>
+  <li>All output now presented as log4j logs, for customizable output</li>
+  <li>Many bug fixes</li>
+</ul>
+<u><b>1.1.5 - Unstable Series</b></u>
+<ul>
+  <li>Brought in jasper-compiler.jar and jasper-runtime.jar from Tomcat
+5.5.4</li>
+  <li>Added -nocache option to SmartCache to prevent dynamic pages from
+caching, such as for the Wiki</li>
+</ul>
+<u><b>1.1.4 - Unstable Series</b></u>
+<ul>
+  <li>Ported to 2.3.1 version of JXTA</li>
+  <li>Ported to new integrated version of JXTA Profiler</li>
+  <li>Major internal refactoring, getting rid of nested peer groups
+and storing more information in the name field</li>
+  <li>Ported to 2.0.2 version of Apache Commons HTTPClient</li>
+  <li>Changed the manifest for org.mortbay.jetty.jar to _not_
+be sealed, since we modify one of its classes</li>
+  <li>Extracted and changed org.mortbay.http.HttpConnection to do
+a different kind of output flush, which is needed since our underlying
+JXTA output stream is buffered and behaves slightly different then a
+normal
+socket output stream.</li>
+  <li>All unit tests pass, including the examples</li>
+  <li>Created jspwiki-run task to easily start up a P2P WikiWiki</li>
+  <li>Made sure that P2P JSPWiki and P2P To Web Proxy work</li>
+  <li>Updated the JavaOne presentation to bring it up to date</li>
+  <li>Updated the original JXTA Community Meeting presentation to bring
+it up to date and converted it to OpenOffice format</li>
+  <li>Updated the first tutorial, "Introduction to the Peer-to-Peer
+Sockets Project,"
+for this new release and internal design</li>
+  <li>Updated the second tutorial, "How to Create Peer-to-Peer Web
+Servers, Servlets, JSPs, and XML-RPC Clients and Servers",
+for this new release and internal design</li>
+  <li>TODO: Make sure the P2P XML-RPC port still works</li>
+  <li>TODO: Get the accountExists method to work again</li>
+</ul>
+<u><b>1.1.3 - Unstable Series</b></u>
+<li>TODO: Integrating new beta version of JXTA with JXTA Profiler
+integrated</li>
+<li>TODO: Adding jspwiki ant directive to start up the JSPWiki engine.</li>
+<li>TODO: Add "Call to Action" section to JavaOne presentation, do a
+runthrough to ensure it is correct, and do some practice runs</li>
+<li>TODO: Update tutorials to ensure they are still correct</li>
+<li>Removed p2psockets/src/java/net/jxta/ext/config and bootstrap from
+CVS
+since we are moving towards using the version of the Profiler
+integrated into
+JXTA</li>
+<u><b>1.1.2 - Unstable Series</b></u>
+<ul>
+  <li>Modified P2PNetwork to now correctly check and throw an exception
+if the username or password given is incorrect</li>
+  <li>Created P2PNetwork.createAccount() methods so that you can create
+a new JXTA/P2P account from scratch.</li>
+  <li>Modified P2PNetwork.signon to simply return if we are already
+signed on.</li>
+  <li>Created Ant tasks "example-webserver-run" and
+"example-webclient-run" to start the P2P web server and P2P http clients</li>
+  <li>Changed org.mortbay.p2psockets.jetty.Server to have the class
+name org.mortbay.p2psockets.jetty.P2PServer
+so that classname conflicts won't occur with org.mortbay.jetty.Server.</li>
+  <li>Added accountExists() method to P2PNetwork to see if a given
+username account exists. Also added
+an argument to P2PNetwork.signin to create a given account if it
+doesn't exist yet.</li>
+  <li>Added a new presentation, "Creating an API for P2P Networks",
+from the March 4th 2004 presentation at Berkeley. It
+is in p2psockets/www/docs/tutorials/p2psockets_berkeley.ppt</li>
+  <li>Incorporated a patch to the P2PNetwork class from John Mitchell</li>
+  <li>Changed P2PNetwork to use a different version of
+PeerGroup.newGroup()</li>
+  <li>Isolated and fixed a bug that affects 'ant example-webserver-run'
+in JxtaServerSocket when we moved from JXTA 2.1
+to JXTA 2.2.</li>
+  <li>Made sure that example-webserver-run and example-webclient-run
+work</li>
+  <li>TODO: Create a org.p2psockets.P2PException class and throw it
+whereever we throw Exceptions now</li>
+  <li>TODO: When James and Mohamed finish refactoring JXTA Profiler, do
+a diff against our local copy to retain
+any changes we made since the split made against the code they used.</li>
+</ul>
+<u><b>1.1.1 - Unstable Series</b></u>
+<p><b>Overview of this release</b></p>
+<p>This release includes several major changes, notably in the areas of
+deployment, upgrades, and project management.</p>
+<p>P2P Sockets is now much easier to deploy. First, it includes a new
+package called the JXTA Profiler, created
+for P2P Sockets. The JXTA Profiler causes a peer to automatically
+determine its network environment and configure
+itself accordingly, without user-involvement. For example, if a peer is
+behind a firewall or a Network Address
+Translator (NAT) device, the JXTA Profiler will detect this and
+autoconfigure the peer to use a JXTA relay.
+P2P Sockets also now no longer needs to be added to the bootclasspath,
+which makes it much easier to deploy P2P Sockets in applications and
+applets and increases security. Further, Kevin Lahoda's overhaul of the
+P2P Sockets build system now makes it much easier to run and deploy P2P
+Socket's based applications without
+having to have platform-specific batch files.</p>
+<p>P2P Sockets has also now been upgraded to work with several new
+releases of packages it depends on, including
+JXTA 2.2, Jetty 4.2.12, and Ant 1.6.0.</p>
+<p>P2P Sockets includes several changes to project management. First,
+Kevin Lahoda has done an extensive overhaul
+of the P2P Sockets Ant-based build system, cleaning it up and making it
+much easier to deal with. Second,
+we are moving to new way of labeling releases, taken from the same way
+the Linux Kernel development process occurs. There are now two release
+series, Stable and Unstable. The Stable Series have even point release
+numbers (e.g. 2.2.x and 2.4.x.), generally minor releases contain bug
+fixes and small enhancements. The Unstable Series contain
+less proven code, unrunnable code, radical experimental changes, and
+test bed changes. They are not guaranteed to work
+and might hose your system. The Unstable Series have odd numbers in
+their major release numbers (e.g. 1.1.x and 2.3.x).</p>
+<p>Note that this release is part of the unstable series (1.1.1), and
+is therefore not guaranteed to work.
+See the full release notes below for all the changes that were made to
+this release</p>
+<br>
+<br>
+<p><b>Detailed release notes</b></p>
+<ul>
+  <li>Deployment</li>
+  <ul>
+    <li>First version of JXTA Profiler finished</li>
+    <li>Removed needing to add P2P Sockets to the bootclasspath by
+taking it out of the java.net package. All classes are now in
+org.p2psockets instead of java.net. This change improves security and
+deployment Making this change involved some trickery to handle
+java.net.InetAddress (our corresponding class is
+org.p2psockets.P2PInetAddress), since the constructor of InetAddress is
+private. See the JavaDoc for P2PInetAddress to understand how we tie
+into InetAddress without needing to subclass it.</li>
+    <li>test.org.p2psockets.TestPackage was run and successfully
+passes, meaning that the new bootclasspath code is working.</li>
+    <li>Updated build.xml to not need setting of the bootclasspath.</li>
+    <li>Removed bin/start-jetty.sh</li>
+    <li>TODO: Remove the test/clientpeer and test/serverpeer .jxta
+directories from CVS and from the distribution, since they are created
+automaticly by the Profiler now</li>
+  </ul>
+  <li>Project Management</li>
+  <ul>
+    <li>Moving to new way of labeling releases, taken from the same way
+the Linux Kernel development process occurs. There are two series,
+Stable and Unstable. The Stable Series have even point release numbers
+(e.g. 2.2.x and 2.4.x.), generally minor releases contain bug fixes and
+small enhancements. The Unstable Series contain less proven code,
+unrunnable code, radical experimental changes, and test bed changes.
+They are not guaranteed to work and might hose your system. The
+Unstable Series have odd numbers in their major release numbers (e.g.
+1.1.x and 2.3.x) </li>
+    <li>Created a new custom ant tag, &lt;release&gt;, which takes
+special arguments in a build.properties file, such as a version number,
+and automatically automates the release process detailed above.</li>
+    <li>Updated to ant-contrib 0.6.</li>
+    <li>Folded in Kevin Lahoda's new build.xml, which can now take
+arguments from the command-line through ant in a cross-platform way so
+that we can begin to deprecate the old run scripts in p2psockets/bin.
+Also removed all of the old scripts in p2psockets/bin but put Kevin's
+new start-jetty.sh script inside and added a p2psockets/bin/README.txt
+file instructing users to type 'ant help' to see a list of runnable
+commands.</li>
+  </ul>
+  <li>Added a new directive to build.xml: 'run', which makes it easy to
+run a custom P2P Sockets class.</li>
+  <li>Harmonizeed Paper Airplane's and P2P Socket's build system. Made
+Paper Airplane's build.xml use Kevin's nice P2P Socket's build.xml
+layout, while bringing over some of Paper Airplane's nice directives
+for posting releases into the www directory for easy download by
+end-users.</li>
+  <li>Set things up so downloads of P2P Sockets comes from www CVS
+directory rather than from codinginparadise.org</li>
+  <li>Checked everything into CVS</li>
+  <li>Created a section in a README file on CVS structure, such as our
+branches, tags, vendor branches, etc.</li>
+  <li>TODO: Once everything is in CVS, tag this is an INITIAL_IMPORT
+release</li>
+  <li>Updated the Contributors section in the README file to include
+everyone who helped brainstorm the Profiler as well as putting what
+each persons contribution is next to their name.</li>
+  <li>Removed dependency on needing entire Jetty package, other than
+JARs. Handling this entire package bloats the size of the download and
+is a pain to manage in CVS</li>
+  <ul>
+    <li>TODO: Be able to start Jetty using an XML file (create a stub
+file that loads it up)</li>
+    <li>TODO: Modify presentation and 2.html to use this class</li>
+    <li>TODO: Make sure scripts in batch and build.xml work for
+starting Jetty</li>
+  </ul>
+</ul>
+<li>Ports</li>
+<ul>
+  <li>Ported codebase from JXTA 2.1 to JXTA 2.2.</li>
+  <li>Ported codebase to Jetty 4.2.12 (needed by JXTA 2.2)</li>
+  <li> </li>
+  <li>Updated to Ant 1.6.0</li>
+</ul>
+<li>Bug fixes</li>
+<ul>
+  <li>Fixed JXTA platform bug 971, "The input and output streams from
+JxtaSockets hang in a common situation", which prevent
+ExampleServerSocket and ExampleClientSocket from running correctly.
+Submitted a patch for this bug, which has been accepted and
+incorporated into the JXTA platform tree.</li>
+  <li>TODO: when our patch for the out.flush() is integrated into JXTA,
+update our build.xml file to not need to compile things in net/** as
+well as not to add things in net to the core JARs. For now we need to
+include our own built patch with P2P Sockets to get around this bug.</li>
+  <li>TODO: Fix the ext:config bug that happens when it is in a
+directory with spaces in it. This impacts P2P Sockets because it can't
+be installed into a directory with spaces.</li>
+</ul>
+<li>Documentation/Web Site</li>
+<ul>
+  <li>TODO: Update all docs to refer to Ant 1.6, not older versions.</li>
+  <li>Updated both PA's and P2P Socket's README files on how to use the
+new build system as well as our custom ant tasks</li>
+  <li>Brought in O'Reilly version of 1.html</li>
+  <li>TODO: Make sure that all tutorials (including the presentation)
+are correct using Kevin's new build script and our bootclasspath
+changes.</li>
+  <li>TODO: Update web page to explain new Stable/Unstable Series
+release process and to have sections for downloading both kinds</li>
+  <li>Made the JXTA website use our custom www/index.html rather than
+having to edit in a form.</li>
+</ul>
+<li>Testing</li>
+<ul>
+  <li>TODO: Make sure the XML-RPC client and server, the P2PToWebProxy
+(Smart Cache), JSPWiki, and the Jetty servlet ports are still working
+even with all of our changes</li>
+</ul>
+<u><b>1.0 beta 1 - 11-5-2003</b></u>
+<ul>
+  <li>Formatted the first tutorial, 1.html, so that it can run on
+Oreilly's ONJava and ONP2P sites; also formatted
+the table with in-depth implementation information. The second
+tutorial, 2.html, has not been formatted yet.</li>
+</ul>
+<u><b>1.0 beta 1 - 10-30-2003</b></u>
+<ul>
+  <li>Added Kevin's new build.xml file, and also added a new JAR that
+this depends on in lib/ant-contrib-0.5.jar</li>
+  <li>Updated tutorials on the need to add the new JAR file to your
+classpath for Kevin's addition</li>
+</ul>
+<u><b>1.0 beta 1 - 10-24-2003</b></u>
+<ul>
+  <li>Fixed a bug in P2PToWebProxy</li>
+</ul>
+<u><b>1.0 beta 1 - 10-23-2003</b></u>
+<ul>
+  <li>Added a way to run the P2PToWebProxy programmatically</li>
+</ul>
+<u><b>1.0 beta 1 - 10-9-2003</b></u>
+<ul>
+  <li>Had to back-out of porting things to Jxta 2.1.1. See issue # 35
+for details.</li>
+  <li>Leaving in all the changes backporting from Jetty 4.2.10pre0 to
+4.1.1; this should clear up some bugs
+since 4.1.1 is the version of Jetty that Jxta has used for the last
+year.</li>
+  <li>Copied over the 4.1.1 version of Jetty to support-packages/jetty
+and added our custom etc/demo.xml file,
+custom start-jetty.bat and start-jetty.sh scripts, and our JSPWiki.war
+file</li>
+  <li>There was an error in docs/tutorials/2.html on how to start the
+Jetty server; corrected this. Fixed a similar
+mistake in docs/tutorials/p2psockets_presentation.ppt.</li>
+  <li>I went back through all the tutorials and the presentation to
+make sure everything works</li>
+</ul>
+<u><b>1.0 beta 1 - 10-8-2003</b></u>
+<ul>
+  <li>HTMLized this file</li>
+  <li>Jxta 2.1.1 depends on Jetty 4.1.1; the original P2P Sockets
+release used 4.2.10pre0. After moving to the new
+version of Jxta this difference in versions created compile-time and
+run-time problems, so now we need to backport
+everything in org.mortbay.p2psockets to the older version of Jetty
+(finished, but not tested), as well as copy over the 4.1.1 version of
+Jetty to support-packages/jetty (not finished in 10-8-2003 build),
+including re-editing the demo.xml files (not finished in 10-8-2003
+build). This is all in progress.</li>
+  <li>Unfortunately, Jetty 4.1.1 has org.mortbay.util.ThreadPool.join()
+marked final; we had to generate a patched
+version of Jetty 4.1.1 from source that is exactly the same except for
+this method being marked non-final.
+org.mortbay.p2psockets.http.P2PSocketListener needs to over-ride this
+method, which is allowed in newer versions
+of Jetty but not Jetty 4.1.1. Since only one thing is removed, this
+patch isn't bundled with P2P Sockets. Instead,
+a new org.mortbay.jetty.jar file was created by Brad Neuberg and simply
+bundled in p2psockets/lib.</li>
+  <li>Downloaded http://jnushare.jxta.org/archive/jnushare-3.4.9.zip
+and used its Jxta 2.1.1 libs to put into
+p2psockets/lib</li>
+</ul>
+<u><b>1.0 beta 1 - 10-6-2003</b></u>
+<ul>
+  <li>Integrating JXTA 2.1.1 J2SE Stable Release to fix issue 26 -
+"NATed clients can't reach server peers that have real IP addresses"</li>
+  <li>Fixed bug 22 - The tutorials in docs/tutorials/1.html and
+docs/tutorials/2.html incorrectly used the older shell variable
+"p2psockets.home"; they have been updated to be "p2psockets_home".</li>
+  <li>Copied over everything from Jetty 4.2.12 distribution to
+overwrite parts of p2psockets/support-packages/jetty</li>
+</ul>
+<u><b>1.0 beta 1 - 10-3-2003</b></u>
+<ul>
+  <li>Brought in new JXTA 2.1.1 J2SE Platform Release</li>
+  <li>Regenerated test/clientpeer/.jxta and test/serverpeer/.jxta using
+new JXTA version</li>
+</ul>
+<u><b>1.0 beta 1 - 10-1-2003</b></u>
+<ul>
+  <li>Added some more scripts for Unix platforms from Kevin Lahoda.
+These are as follows:</li>
+  <ul>
+    <li>bin/start-example-web-server.sh - Starts the example web server
+from the tutorials.</li>
+    <li>bin/start-p2pproxy.sh - Starts the P2P To Web Proxy</li>
+    <li>bin/start-httpclient.sh - Starts the HTTP/1.1 command-line
+client</li>
+    <li>support-packages/jetty/start-jetty.sh - Starts the Jetty web
+server in P2P mode.</li>
+  </ul>
+</ul>
+<u><b>1.0 beta 1 - 9-29-2003</b></u>
+<ul>
+  <li>Added scripts to run example client and server sockets on Unixes,
+submitted by Kevin Lahoda (see bug 25 at
+http://p2psockets.jxta.org/issues/show_bug.cgi?id=25 for details)</li>
+</ul>
+<u><b>1.0 beta 1 - 9-22-2003</b></u>
+<ul>
+  <li>Added full open-source licensing information to README and
+deleted LICENSE file</li>
+  <li>Updated all source files to have their correct license information</li>
+  <li>Removed VERSION file</li>
+</ul>
+<u><b>1.0 beta 1 - 9-17-2003</b></u>
+<ul>
+  <li>Added new version of Powerpoint Presentation that has some fixes</li>
+</ul>
+<u><b>1.0 beta 1 - 9-16-2003</b></u>
+<ul>
+  <li>Added the following new batch files: bin/start-p2pproxy.bat,
+bin/start-httpclient.bat, and support-packages/jetty/start-jetty.bat.
+These batch files are meant to vastly simplify starting up the modified
+Jetty server, the Apache HTTP-Client, and the P2PToWebProxy.</li>
+  <li>Modified org.mortbay.jetty.p2psockets.Server and
+org.scache.P2PToWebProxy to be able to take better command-line
+arguments for the batch files</li>
+  <li>Added a new PowerPoint Presentation in
+docs/tutorials/p2psockets_powerpoint.ppt. See it for a good intro to
+the project.</li>
+  <li>Modified the web server tutorial in docs/tutorials/2.html to use
+the new, simpler batch files.</li>
+</ul>
+</body>
+</html>

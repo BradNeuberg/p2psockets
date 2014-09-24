@@ -1,0 +1,742 @@
+<h2>
+How to Create Peer-to-Peer Web Servers, Servlets, JSPs, and XML-RPC Clients and Servers</h2>
+
+by <a href="/pub/au/1388">Brad Neuberg</a><br />
+11/23/2004
+
+<p>The Peer-to-Peer (P2P) Sockets Project reimplements Java's standard <code>Socket</code>, <code>ServerSocket</code>,
+and <code>InetAddress</code> classes to work on the <a href="http://www.jxta.org">JXTA</a> peer-to-peer network, rather than 
+on the standard TCP/IP network. It also includes ports of many popular web packages, such as the Jetty web server, the Apache 
+XML-RPC client and server libraries, and the Apache Jasper JSP engine, to run on the Peer-to-Peer
+Sockets framework.</p>
+
+<p>By the end of this article you will know how to create and access peer-to-peer web
+servers, servlets, JSPs, and XML-RPC clients and servers. Why
+would you want to do this? First, P2P web servers can be run on
+machines that would ordinarily not be resolvable or reachable, due to
+the issues discussed above. Second, you can now leverage your
+existing servlet and JSP skills to create peer-to-peer networks without
+learning new APIs. Peers in your network can assume the roles of
+both HTTP client and server, interacting with other peers who are
+themselves both HTTP clients and servers. The servlets and JSPs
+exposed could be related to instant messaging, blogging, WikiWiki
+groupware functionality, or more. Now every peer in the network,
+regardless of whether their cable ISP treats them as second-class
+citizens, can easily be both a writeable and readable node, opening the
+possibility of a Two Way Web. Even better, everything is built
+above a modified version of Jetty, an open-source web server that is
+specifically designed to be small and embeddable in other applications,
+making it easy for you to roll P2P functionality into your own
+applications.</p>
+
+<p>For more information on using the raw P2P sockets and server sockets in
+your own code, and for details information on how the peer network
+itself is created, see the tutorial <a href="1.html">Introduction to
+Peer-to-Peer Sockets</a>.</p>
+
+<h3>Motivation</h3>
+
+<p>The P2P Sockets project is designed for developers interested in:</p>
+
+<ul>
+<li><p>Returning the end-to-end principle to the Internet.</p></li>
+
+<li><p>An alternative peer-to-peer domain name system that bypasses 
+<a href="http://searchwebservices.techtarget.com/gDefinition/%20%0A0,294236,sid26_gci214011,00.html">ICANN</a> and 
+<a href="http://www.verisign.com">Verisign</a>, is completely decentralized, and responds to updates much quicker than 
+standard <a href="http://www.atis.org/tg2k/_dns.html">DNS</a>.</p></li>
+
+<li><p>An Internet where everyone can create and consume network services, even if they have a dynamic IP address or no 
+IP address, are behind a <a href="http://compnetworking.about.com/library/glossary/bldef-nat.htm">Network Address Translation (NAT) 
+device</a>, or blocked by an ISP's firewall.</p></li>
+
+<li><p>A Web where every peer can automatically start a web server, host an 
+<a href="http://compnetworking.about.com/cs/webservices/g/bldef_xmlrpc.htm">XML-RPC</a> service, and more, and quickly make these 
+available to other peers.</p></li>
+
+<li><p>Easily adding peer-to-peer functionality to Java socket and server socket applications.</p></li>
+
+<li><p>Having servlets and Java Server Pages work on a peer-to-peer network for increased reliability, easier maintenance, and 
+exciting new end-user functionality.</p></li>
+
+<li><p>Playing with a cool technology.</p></li>
+</ul>
+
+<p>The P2P Sockets project reimplements the standard <code>java.net</code> classes on top of the 
+<a href="http://www.JXTA.org">JXTA</a> peer-to-peer network. "Aren't standard TCP/IP sockets and server sockets already peer-to-peer?" 
+some might ask. Standard TCP/IP sockets and server sockets are theoretically peer-to-peer, but in practice are not, due to firewalls, 
+NAT devices, and
+political and technical issues with the Domain Name System (DNS). First, many of the peers on the Internet are given 
+dynamic IP addresses through DHCP, shared or filtered IP addresses through NAT devices, or IP addresses that are very
+hard to reach due to firewalls. Creating server sockets under such
+conditions is either impossible or requires elaborate application-level
+ruses to bypass these restrictions. Second, TCP/IP sockets and
+server sockets depend on DNS to resolve
+human-friendly host names into IP addresses. DNS is theoretically
+semi-decentralized, but on an administrative level, it is centralized
+under ICANN, an unresponsive, non-innovative organization. Further, standard DNS does not deal well with edge-peers that have 
+filtered or dynamic IP addresses, and updates take too long to
+propagate and have no presence information. Developers who wish to create exciting, new applications that extend DNS into 
+new directions, such as storing instant messaging usernames and presence info in DNS, are
+stymied by the DNS system's technical and political issues.</p>
+
+<p>P2P Sockets is based on JXTA, an open source project that creates a peer-to-peer overlay network that sits on top of TCP/IP. Every
+peer on the network is given an IP-address-like number, even if they are
+behind a firewall or don't have a stable IP address. Super-peers on the JXTA network run application-level routers that store special 
+information such as how to reach peers, how to join subgroups of peers,
+and what content peers are making available. JXTA application-level relays can proxy requests between peers that would
+not normally be able to communicate due to firewalls or NAT devices. Peers organize themselves into peer groups, which scope all 
+search requests and act as natural security containers. Any peer can publish and create a peer group in a decentralized way, and 
+other peers can search for and discover these peer groups using other super-peers. Peers communicate using <i>pipes</i>, which are 
+very similar to Unix pipes. Pipes abstract the exact way in which two peers
+communicate, allowing peers to communicate using other peers as intermediaries if they normally would not be able to communicate due 
+to network partitioning.</p>
+
+<p>JXTA is an extremely powerful framework. However, it is not an easy framework to learn, and porting existing software to work on 
+JXTA is not for the faint-of-heart. P2P Sockets effectively hides JXTA by creating a thin illusion that the peer-to-peer 
+network is actually a standard TCP/IP network. If peers wish to become servers, they simply create a P2P server socket with 
+the domain name they want, and the port other peers should use to contact them. P2P clients open socket connections to hosts 
+that are running services on given ports. Hosts can be resolved either by domain name, such as <code>www.nike.laborpolicy</code>, or 
+by IP address, such as <code>44.22.33.22</code>. Behind the scenes, these resolve to JXTA primitives, rather than
+being resolved through DNS or TCP/IP. P2P sockets and server sockets work exactly the
+same as normal TCP/IP sockets and server sockets. For the technically inclined and those who already understand JXTA, 
+a <a href="jxta_p2psockets_table.html" target="_blank" rel="Table">table exists</a> illustrating how standard 
+TCP/IP concepts such as host name, IP address, etc., map to their JXTA equivalents. </p> 
+
+<p>The P2P Sockets project already includes a
+large amount of software ported to use the peer-to-peer network, including a web server (<a href="http://jetty.mortbay.org/jetty/">Jetty</a>) 
+that can receive requests and serve
+content over the peer-to-peer network; a servlet and JSP engine (Jetty and <a href="http://jakarta.apache.org/tomcat/">Jasper</a>) 
+that allows existing servlets and JSPs to serve P2P 
+clients; an XML-RPC client and server (<a href="http://ws.apache.org/xmlrpc/">Apache XML-RPC</a>) for accessing and exposing 
+P2P XML-RPC endpoints; an HTTP/1.1 client (<a href="http://jakarta.apache.org/commons/httpclient/">Apache Commons HTTP-Client</a>) 
+that can access P2P web servers; a gateway (<a href="http://scache.sourceforge.net/">Smart Cache</a>) to make it possible for existing 
+browsers to access P2P web sites; and a <a  href="http://www.wikipedia.org/wiki/WikiWiki">WikiWiki</a> 
+(<a href="http://www.jspwiki.org/Wiki.jsp">JSPWiki</a>)
+that can be used to host WikiWikis on your local machine that other peers can access and edit through the P2P network. 
+Even better, all of this software works and looks exactly as it did before being ported. Everything included 
+in the P2P sockets project is open source, mostly under BSD-type licenses, and cross-platform due to being  written in Java.</p>
+
+<p>The 1.1.4 release of P2P Sockets includes powerful autoconfiguration technology through the JXTA Profiler.  The 
+JXTA Profiler is an addition to the JXTA project spun out of P2P Sockets that has now been refactored and reintegrated back into the
+core JXTA.  On startup, a P2P Sockets application automatically scans a peers local environment to determine if they are NATed, 
+firewalled, and more, and autoconfigures the JXTA network stack appropriately.  Programmers and end-users now do not need to 
+manually configure their peers based on their network environment, drastically simplifying deployment and configuration.</p>
+
+<h3>Requirements and Configuration</h3>
+
+<p>You must download and install the following software to develop and work with P2P Sockets.</p>
+
+<ul>
+<li><p><a href="http://www.javasoft.com/products/jdk/1.4">JDK 1.4+</a><br />
+P2P Sockets only works with versions of the JDK after 1.4, because P2P Sockets subclasses <code>java.net.InetAddress</code>. 
+Prior to 1.4, this class was marked <code>final</code> and could not be subclassed.</p></li>
+
+<li><p><a href="http://ant.apache.org/">Ant 1.6.0+</a><br />
+Used to both build and run P2P Sockets and extensions such as Jetty and Jasper.</p></li> 
+
+<li><p><a href="http://p2psockets.jxta.org/releases/unstable/p2psockets-1_1_4.zip">p2psockets-1_1_4.zip</a><br />
+The latest release of the P2P Sockets package. </p></li>
+</ul>
+
+<p>Install and configure the JDK and Ant, and make sure both are in
+your path so they can be run from the command line. Unzip <code>p2psockets-1_1_4.zip</code> into the top level of your 
+hard drive; spaces are not allowed in the directory names, or the P2P Sockets build files will
+not work correctly.</p>
+
+<p>When testing the examples in this tutorial, you must be connected to
+the Internet. This is for two reasons: first, the examples use a
+public JXTA server Sun(tm) has set up that helps bootstrap peers into the
+JXTA network and profile their network condition; and second, on some operating systems (such as on Windows
+XP, by default), the network subsystem shuts down if you are not
+connected to the Internet, preventing client peers and server peers that are 
+running on the same machine from finding or communicating with each
+other.</p>
+
+<h3>Starting a P2P Web Server from the Command-Line</h3>
+
+<p>Starting a simple P2P web server to serve static content and run
+servlets and JSPs is easy. Open a shell window and enter the
+directory you installed the P2P Sockets package into.  Then, define the 
+following shell variables, modifying them as appropriate for
+your platform and where you have installed your software:</p>
+
+<pre><code>set p2psockets_home=c:\p2psockets
+set JAVA_HOME=c:\j2sdk1.4.1
+</code></pre>
+
+<p>To start your P2P web server, type:</p>
+
+<code>ant webserver-run -D--host=www.nike.laborpolicy -D--network=TestNetwork -D--port=80</code>
+
+<p>This will start up a P2P web server. You should see something
+like the following printed out:</p>
+
+<pre><code>Signing into the P2P network...
+Using the application peer group name TestNetwork
+Waiting for RendezVous Connection....
+Finished connecting to RendezVous.
+02:58:42.730 EVENT Checking Resource aliases
+02:58:48.889 EVENT Starting Jetty/4.2.10pre0
+02:58:48.909 EVENT Started org.mortbay.http.NCSARequestLog@33f0de
+02:58:50.602 EVENT setStatsOn true for
+WebApplicationContext[/jetty,Jetty Demo]
+02:58:50.862 EVENT Started WebApplicationContext[/jetty,Jetty
+Demo]
+02:58:51.874 EVENT Started ServletHttpContext[/cgi-bin]
+02:58:52.174 EVENT Started WebApplicationContext[/,Jetty Demo
+Root]
+02:58:52.214 EVENT Started ServletHttpContext[/demo]
+02:58:52.705 EVENT Started
+WebApplicationContext[/examples,c:\p2psockets/support-packages/jetty/demo/webapps/examples]
+02:58:52.735 EVENT ContextListener: contextInitialized()
+02:58:52.735 EVENT SessionListener: contextInitialized()
+02:58:52.835 EVENT ContextListener:
+attributeAdded('javax.servlet.context.tempdir',
+'C:\DOCUME~1\BRADNE~1\LOCALS~1\Temp\Jetty_238_39_22_221_80__examples')
+02:58:52.855 EVENT Started ServletHttpContext[/javadoc]
+02:59:15.327 EVENT Started P2PSocketListener on 238.39.22.221:80
+02:59:15.337 EVENT Started AJP13Listener on 0.0.0.0:8009
+02:59:15.337 EVENT NOTICE: AJP13 is not a secure protocol. Please
+protect the port 0.0.0.0:8009
+02:59:15.337 EVENT Started
+org.mortbay.p2psockets.jetty.Server@2acc65</code></pre>
+
+<p>By changing the values after <code>-D--port</code>
+and <code>-D--host</code> you can gain greater control over
+the port and host name clients will use to access your web server.</p>
+
+<p>The <code>-D--network=TestNetwork</code> require mores explanation. <code>TestNetwork</code>, in the above example,
+is a unique name that will be given to your peer-to-peer network.
+Different peer-to-peer networks that are based on P2P Sockets can
+co-exist without knowing about each other. Clients and servers
+create and resolve their server sockets and sockets in a specific
+peer-to-peer network. This value is the name of your own private,
+application-specific peer-to-peer network<sup><a href="#footnote4">4</a></sup>.
+If you create your P2P web server in the peer-to-peer network
+named <code>TestNetwork</code>, while a client signs into another
+peer-to-peer network named <code>InstantMessagingNetwork</code>,
+then they will not be able to find each other or communicate.
+Choose your network name to go along with the name of your
+application or the type of network you are creating, such as <code>MyApplicationsNetwork</code> or 
+<code>AcmeCompanyInformationNetwork</code>.</p>
+
+<p>By default, the web server started above will look for static content
+files in the directory <code>p2psockets/docroot</code>.
+To make your own content accessible to P2P clients simply drop it into
+this folder. To add dynamic content, you must add your servlet,
+JSP file, or WAR file to <code>p2psockets/webapps</code>.  Your web application
+will then be served from <code>/webapps</code> on the URL; i.e. if you put 
+<code>myapp.war</code> into <code>p2psockets/webapps</code> then you would
+access it as a URL you would access it as <code>/webapps/myapps</code> if you
+<code>web.xml</code> file in <code>myapp.war</code> mapped it to <code>myapps</code></p>
+
+<p>To test your P2P web server, open another window and change into the <code>p2psockets</code> directory. After
+doing so, type the following:</p>
+
+<code>
+ant httpclient-run -D--network=TestNetwork -D--url=p2phttp://www.nike.laborpolicy/webapps/examples/jsp/index.html
+</code>
+
+<p>This will start a modified version of the <a
+ href="http://jakarta.apache.org/commons/httpclient/">Apache Commons
+HTTP-Client</a>, using the clientpeer JXTA configuration files in <code>test/clientpeer</code> Apache
+HTTP-Client is a client-side implementation of the HTTP/1.1 protocol;
+it has been modified to work on the JXTA P2P network.</p>
+
+<p>You should see HTML code fill the page in the window you started the
+HTTP client in.</p>
+
+<h3>Accessing your P2P Web Server from a Normal Browser</h3>
+
+<p>If P2P web servers could only be accessed from command-line HTTP
+clients then the system would have limited utility. The P2P
+Sockets project, however, includes a special system to make it possible
+for ordinary web browsers to access P2P web servers. This is done
+by running a special proxy on the local machine and modifying the web
+browser to use this proxy for all domain name resolutions<sup><a
+ href="#footnote5">5</a></sup>. This locally-running proxy takes normal HTTP
+requests from a web browser, proxies them over the peer-to-peer network
+to a P2P web server, and then returns the P2P results as an ordinary
+HTTP response to the browser.</p>
+
+<p>To start this proxy, type the following:</p>
+
+<code>
+ant p2pproxy-run -D--network=TestNetwork -D--port=8080
+</code>
+
+<p>This will start the P2P Proxy on port <code>8080</code>, using the JXTA
+configuration file located in <code>test/clientpeer</code>.
+The peer-to-peer network that will be used is the one named <code>TestNetwork</code>. You should see
+something similar to the following printed out in the window:</p>
+
+<pre><code>
+Using the application peer group name TestNetwork
+Waiting for RendezVous Connection................
+Finished connecting to RendezVous.
+Creating proxy...
+Smart Cache 0.88 - full featured caching proxy server and web forwarder.
+Copyright (c) Radim Kolar 1998-2003. Opensource software; There is NO
+warranty.
+See the GNU General Public License version 2 or later for copying
+conditions.
+
+[WARNING] No config file (.\scache.cnf) found, using defaults.
+Checking filesystem (store)
+ Filesystem allows ending dot in filename: false
+ Filesystem allows backslash in filename : false
+ Filesystem reports real directory size : false
+
+Fri Sep 05 03:36:28 PDT 2003 Smart Cache 0.88 ready on 8080/*</code></pre>
+
+<p>You now need to configure your web browser to use the proxy that is
+running on your machine.</p>
+
+<p>If you are using Mozilla, do the following. From the pull-down
+menus, select Edit &gt; Preferences... A pop-up window should
+appear. On the left of the window, select Advanced &gt; Proxies.
+The proxy configuration should appear on the right as follows:</p>
+
+<div style="text-align: center;"><img
+ src="images/Mozilla_Proxy_Before_Changing.gif" title=""
+ alt="Screenshot of Mozilla proxy before changing"
+ style="width: 562px; height: 462px;">
+</div>
+
+<p>Select the radio button titled <code>Manual
+proxy configuration</code>, and in the field labeled <code>HTTP Proxy</code> enter the value
+<code>127.0.0.1</code>; in the field label <code>Port</code>
+to the right of the <code>HTTP Proxy </code>field
+enter the value <code>8080</code>. After finishing, the dialog should look
+as follows:</p>
+
+<div style="text-align: center;"><img
+ src="images/Mozilla_Proxy_After_Changing.gif" title=""
+ alt="Screenshot of Mozilla proxy after changing"
+ style="width: 562px; height: 462px;">
+</div>
+
+<p>Press the <code>OK</code> button.</p>
+
+<p>If you are using Firefox, do the following. From the
+pull-down menus, select <code>Tools &gt;
+Options</code>... A popup window should appear; select the icon on the
+lower left titled <code>Connection</code>.
+You should see the following:</p>
+
+<div style="text-align: center;"><span style="font-style: italic;"><img
+ src="images/FireBird_Proxy_Before_Changing.gif" title=""
+ alt="FireBird proxy before changing"
+ style="width: 567px; height: 468px;">
+</div>
+
+<p>Select the radio button titled <code>Manual
+proxy configuration</code>, and in the field labeled <code>HTTP Proxy</code> enter the value
+<code>127.0.0.1</code>; in the field label <code>Port</code>
+to the right of the <code>HTTP Proxy</code> field
+enter the value <code>8080</code>. After finishing, the dialog should look
+as follows:</p>
+
+<div style="text-align: center;"><img
+ src="images/FireBird_Proxy_After_Changing.gif" title=""
+ alt="FireBird proxy after changing"
+ style="width: 567px; height: 468px;">
+</div>
+
+<p>Press the <code>OK</code> button.</p>
+
+<p>It is also possible to configure Internet Explorer to use your local
+proxy, though this tutorial does not detail the steps necessary to do so.</p>
+
+<p>After configuring your browser, enter the address <code>www.nike.laborpolicy</code> in the location
+bar in your browser, just as you would for an ordinary web-site.
+You should see a web page load in the browser.</p>
+
+<h3> Creating P2P Servlets, JSPs, Web Application Archives (WARs)</h3>
+
+<p>There is absolutely nothing you need to do to make your servlets, JSPs,
+and WARs P2P enabled. Your servlets will receive their HTTP
+requests and responses as normal, but instead of these HTTP requests
+comming over a normal HTTP TCP/IP connection, they are tunneled over a
+Jxta Pipe connection. Your servlets are hidden from the specifics
+of the P2P connection, and clients simply appear as normal clients.
+JSPs and WARs also work the same way, and are 'tricked' into
+believing that they are communicating with normal HTTP clients. </p>
+
+<h3>Starting a P2P Web Server from your Java Software</h3>
+
+<p>If you want more control over how Jetty is started and where it places
+its resources and servlets, such as if you are embedding Jetty into a
+larger piece of software, then you will need to start Jetty
+programatically. The example below shows how this is done:</p>
+
+<pre><code>import java.io.*;
+import java.net.*;
+
+import org.p2psockets.*;
+
+import org.mortbay.util.*;
+import org.mortbay.http.*;
+import org.mortbay.p2psockets.util.*;
+import org.mortbay.p2psockets.http.*;
+import org.mortbay.jetty.*;
+import org.mortbay.jetty.servlet.*;
+import org.mortbay.http.handler.*;
+import org.mortbay.servlet.*;
+
+/** This class tests setting up a peer-to-peer web server. */
+public class ExampleP2PWebServer {
+  public static void main(String args[]) throws Exception {
+    // initialize and sign into the peer-to-peer network
+    P2PNetwork.signin("serverpeer", "serverpeerpassword", "TestNetwork", true);
+    
+    // Create the server
+    Server server = new Server();
+ 
+    // Create a port listener
+    System.out.println("Starting web server for www.boobah.cat...");
+    SocketListener listener=new P2PSocketListener();
+
+    listener.setInetAddress(P2PInetAddress.getByAddress("www.boobah.cat", null));
+    listener.setPort(80);
+    server.addListener(listener);
+
+    // Create a context
+    HttpContext context = new HttpContext();
+    context.setContextPath("/");
+    server.addContext(context);
+ 
+    // Create a servlet container
+    ServletHandler servlets = new ServletHandler();
+    context.addHandler(servlets);
+
+    // Map a servlet onto the container
+    servlets.addServlet("Dump","/Dump/*","org.mortbay.servlet.Dump");
+    server.addWebApplication("/", System.getProperty("jetty.home") +  
+                             "/demo/webapps/jetty/JSPWiki.war");
+                             
+    // Serve static content from the context
+    context.setResourceBase(System.getProperty("jetty.home") +  
+                            "/demo/docroot");
+    context.addHandler(new ResourceHandler());
+
+    // Start the http server
+    server.start();
+ }
+}</code></pre>
+
+<p>In the example above, we first sign in and initialize our P2P network:</p>
+
+<pre><code>// initialize and sign into the peer-to-peer network
+P2PNetwork.signin("serverpeer", "serverpeerpassword", "TestNetwork", true);</code></pre>
+
+<p>To sign into the network, you must provide a username and password.
+The <code>signin</code> method looks for a special hidden directory named <code>.jxta</code> that holds various important
+JXTA P2P information. The directory is always created in the same
+directory that the application is run in. If the directory does not exist then the peer is profiled and
+a configuration is transparently created (the fourth argument to <code>signin</code>, <code>true</code>, controls
+whether to create a JXTA configuration directory if one does not exist for the given username).</p>
+
+<p>The first two arguments to the <code>signin</code>
+method are a secure username and password. If you are using the already configured <code>.jxta</code> directory 
+in <code>test/clientpeer</code>, then the username
+is <code>clientpeer</code> and the password
+is <code>clientpeerpassword</code>.
+The user name and password for the JXTA peer configured in <code>test/serverpeer</code> is <code>serverpeer</code> 
+and <code>serverpeerpassword</code>.</p>
+
+<p>The third value, <code>TestNetwork</code> in
+the above example, is a unique name that will be given to your
+peer-to-peer network. Different peer-to-peer networks that are
+based on P2P Sockets can co-exist without knowing about each other.
+Clients and servers create and resolve their server sockets and
+sockets in a specific peer-to-peer network. The final value is the
+name of your own private, application-specific peer-to-peer network.
+If you create your server socket in the peer-to-peer network named <code>TestNetwork</code>, 
+while a client signs into another
+peer-to-peer network named <code>InstantMessagingNetwork</code>,
+then they will not be able to find each other or communicate<sup><a
+ href="#footnote4">4</a></sup>. Choose your network name to go
+along with the name of your application or the type of network you are
+creating, such as <code>MyApplicationsNetwork</code>
+or <code>AcmeCompanyInformationNetwork</code>.</p>
+
+<p>After signing into the network, you then create a server and a
+peer-to-peer socket listener that will listen for requests from peer
+listeners, rather than on a normal TCP/IP socket:</p>
+
+<pre><code>  // Create the server
+ Server server = new Server();
+ 
+ // Create a port listener
+ System.out.println("Starting web server for www.boobah.cat...");
+ SocketListener listener = new P2PSocketListener</span>();
+
+ listener.setInetAddress(P2PInetAddress.getByAddress("www.boobah.cat", null));
+ listener.setPort(80);
+ server.addListener(listener);</code></pre>
+
+<p>The <code>P2PInetAddress</code> class is a subclass of <code>java.net.InetAddress</code> with
+knowledge of how to deal with P2P hostnames and IP addresses. It
+is fully detailed in the tutorial <a
+ href="1.html">Introduction
+to the Peer-to-Peer Sockets Project</a>.</p>
+
+<p>The rest of the example uses the normal Jetty API to add and configure
+a servlet, a resource path to retrieve static content, and a Web
+Application Archive. See the <a
+ href="http://jetty.mortbay.org/jetty/tut/index.html">Jetty
+documentation</a> for more information on how to use the Jetty API.</p>
+
+<p>To run the example web server, open a window and enter the following:</p>
+
+<code>
+ant example-webserver-run
+</code>
+
+<h3>Accessing a P2P Web Server from your Java Software</h3>
+
+<p>To access P2P web servers programatically from your applications as
+clients, you can use the Apache Commons HTTP-Client library. This
+library has been modified to work on a P2P network. An example is
+shown below:</p>
+
+<pre><code>import java.io.*;
+import java.net.*;
+
+import org.apache.commons.httpclient.*;
+import org.apache.commons.httpclient.methods.*;
+import org.apache.commons.httpclient.protocol.*;
+
+/**
+*
+* This is a simple text mode application that demonstrates
+* how to use the Jakarta HttpClient API. All requests are
+* made over JXTA rather than through normal IP sockets.
+*/
+public class ExampleP2PHttpClient {
+
+ public static void main(String[] args) {
+  // initialize JXTA
+  try {
+   // sign in and initialize the JXTA network
+   Network.signin("clientpeer", "clientpeerpassword", "TestNetwork");
+  }
+  catch (Exception e) {
+   e.printStackTrace();
+   System.exit(1);
+  }
+
+  // register the P2P socket protocol factory
+  Protocol jxtaHttp = new Protocol("p2phttp", new P2PProtocolSocketFactory(), 80 );
+  Protocol.registerProtocol("p2phttp", jxtaHttp );
+
+  //create a singular object
+  HttpClient client = new HttpClient();
+
+  //establish a connection within 50 seconds
+  client.setConnectionTimeout(50000);
+
+  String url = args[2];
+  HttpMethod method = null;
+
+  //create a method object
+  method = new GetMethod(url);
+  method.setFollowRedirects(true);
+  method.setStrictMode(false);
+ 
+  //execute the method
+  String responseBody = null;
+  try{
+    client.executeMethod(method);
+    responseBody = method.getResponseBodyAsString();
+  } catch (HttpException he) {
+    System.err.println("Http error connecting to '" + url + "'");
+    System.err.println(he.getMessage());
+    System.exit(-4);
+  } catch (IOException ioe) { 
+    System.err.println("Unable to connect to '" + url + "'");
+    System.exit(-3);
+  }
+
+  //write out the request headers
+  System.out.println("*** Request ***");
+  System.out.println("Request Path: " + method.getPath());
+  System.out.println("Request Query: " + method.getQueryString());
+  Header[] requestHeaders = method.getRequestHeaders();
+  for (int i=0; i&lt;requestHeaders.length; i++){
+    System.out.print(requestHeaders[i]);
+  } 
+
+  //write out the response headers
+  System.out.println("*** Response ***");
+  System.out.println("Status Line: " + method.getStatusLine());
+  Header[] responseHeaders = method.getResponseHeaders();
+  for (int i=0; i&lt;responseHeaders.length; i++) {
+    System.out.print(responseHeaders[i]);
+  }
+
+  //write out the response body
+  System.out.println("*** Response Body ***");
+  System.out.println(responseBody); 
+
+  //clean up the connection resources
+  method.releaseConnection();
+  method.recycle();
+
+  System.exit(0);
+ }
+}</code></pre>
+
+<p>The first part of this example initializes and signs into the P2P
+network, just as in the P2P web server example before. You must
+always take this step before interacting with the network:</p>
+
+<pre><code>  // initialize JXTA
+  try {
+    // sign in and initialize the JXTA network
+    Network.signin("clientpeer", "clientpeerpassword", "TestNetwork");
+  }
+  catch (Exception e) {
+    e.printStackTrace();
+    System.exit(1);
+  }
+</code></pre>
+
+<p>Next, we must establish the existence of a new protocol handler
+to the HTTP-Client library:</p>
+
+<pre><code>  // register the P2P socket protocol factory
+  Protocol jxtaHttp = new Protocol("p2phttp", new P2PProtocolSocketFactory(), 80 );
+  Protocol.registerProtocol("p2phttp", jxtaHttp );</code></pre>
+
+<p>This informs the client library that whenever it sees URL that
+starts with <code>p2phttp://</code>, that is should use our modified P2P factory to
+create P2P sockets rather than the normal one that creates TCP/IP
+sockets. You could also override all <code>http://</code> URLs as well with
+the following:</p>
+
+<pre><code>  // register the P2P socket protocol factory
+  Protocol jxtaHttp = new Protocol("http", new P2PProtocolSocketFactory(), 80 );
+  Protocol.registerProtocol("http", jxtaHttp );</code></pre>
+
+<p>We avoid this in the example above so that the client library can be
+used to resolve both normal, TCP/IP HTTP servers as well as web servers
+resolved through the JXTA, P2P network.</p>
+
+<p>To test out this example, open a shell window and enter the following:</p>
+
+<code>
+ant example-webclient-run -D--network=TestNetwork -D--url=p2phttp://www.boobah.cat
+</code>
+
+<p>You should see the window fill with HTML.</p>
+
+<h3> Creating P2P XML-RPC Clients and Servers</h3>
+
+<p>The Apache XML-RPC Client and Server libraries have also been ported to
+work on a P2P network. Creating these is exactly like creating
+normal Apache XML-RPC clients and servers, but at the beginning of your
+code you must call the <code>P2PNetwork.signin</code>
+method, just as in the examples above.</p>
+
+<p>Using these modified libraries, you can create XML-RPC servers that
+expose their functions over a peer-to-peer network and XML-RPC clients
+that access this functionality over the peer network. Peers in
+your network can assume the roles of both XML-RPC client and server,
+interacting with other peers who are themselves both XML-RPC clients and
+servers. The XML-RPC functions exposed could be related to instant
+messaging, blogging using the MetaWeblog XML-RPC API, editing WikiWikis
+using the WikiWiki XML-RPC API, and more. Even peers that are
+normally unreachable can now be first-class citizens in the network.
+Easily create P2P applications using your existing XML-RPC skills.</p>
+
+<a name="limitations" />
+<h3>Limitations and Security Concerns</h3>
+
+<p>The P2P Sockets project currently has the following limitations and security issues:</p>
+
+<ul>
+<li><p>Spoofing host names and IP address on the peer network is trivial, as no mechanism currently exists to securely 
+associate a given host name or IP address with a specific peer or peer group.</p></li>
+
+<li><p>The network is vulnerable to denial-of-service attacks, where one peer floods the network with requests or 
+attempts to continuously create server sockets.</p></li>
+
+<li><p>The P2P Sockets package does not currently tie into the 
+<a  href="http://java.sun.com/docs/books/tutorial/security1.2/">JVM Security Manager architecture</a>, which would 
+sandbox the code according to a security policy. Once a peer is exposed on a network, other peers could take advantage of flaws 
+in the Java Virtual Machine or the P2P Sockets layer itself to compromise the peer computer. Being able to sandbox the peer code 
+away from native machine resources would help this, but is not currently possible, since P2P Sockets doesn't check the security 
+manager before any operation. It is also dangerous to include a JSP engine on an ordinary user's personal computer, as JSP 
+depends on <code>javac</code>, the Java compiler. It is dangerous to include a network path to a language compiler, as this 
+is a common way to compromise a computer and gain further access. You should precompile your JSPs into servlets and bundle the 
+servlets with your peer programs instead of the full JSP engine.</p></li> 
+
+<li><p>Multicast IP addresses and <a href="http://java.sun.com/docs/books/tutorial/networking/datagrams/broadcasting.html">Multicast sockets</a> 
+are not supported.</p></li> 
+
+<li><p><a href="http://java.sun.com/docs/books/tutorial/networking/datagrams/index.html">UDP sockets</a> are not supported.</p></li> 
+
+<li><p>Site-local/private IP addresses (<code>192.168.x.x</code>) are not supported. Create your own private peer group if you want to 
+simulate a private site address.</p></li>
+
+<li><p>The various socket options, such as <code>SoLinger</code>, are not supported and are ignored.</p></li>
+
+<li><p>Non-blocking I/O socket channels are not supported.</p></li>
+
+<li><p>Loopback socket servers are exposed outside of their local machine, which is incorrect.</p></li> 
+
+<li><p>SSL/HTTPS is not supported.</p></li>
+
+</ul>
+
+<h3>License Information</h3>
+
+<p>P2P Sockets, including the source code in this article, is under the 
+<a href="http://www.jxta.org/license.html">Sun Project JXTA Software License</a>.</p>
+
+<h3>Resources</h3>
+
+<ul>
+<li>"<a href="1.html">Introduction to the Peer-to-Peer Sockets Project</a>"</li>
+<li><a href="http://p2psockets.JXTA.org">P2P Sockets Homepage</a></li>
+<li><a href="http://www.JXTA.org">JXTA Homepage</a></li>
+<li>"<a href="http://www.wikipedia.org/wiki/WikiWiki">What is a WikiWiki?</a>"</li>
+<li><a href="http://www.javasoft.com/products/jdk/1.4">JDK 1.4</a></li>
+<li><a href="http://ant.apache.org/index2.html">Ant 1.5.3</a> </li>
+<li><a href="http://p2psockets.jxta.org/releases/unstable/p2psockets-1_1_4.zip">p2psockets-1_1_4.zip</a></li>
+<li><a href="http://www.codinginparadise.org">Brad GNUberg's Weblog</a></li>
+<li>Email Brad GNUberg at <script language="JavaScript">
+<!--
+var name = "bkn3";
+var domain = "columbia.edu";
+document.write('<a href="mailto:' + name + '&#64;' + domain + '">');
+document.write(name + '&#64;' + domain + '</a>');
+document.write('<!-- mailmunge bit -->');
+// -->
+</script>
+
+</li>
+</ul>
+
+<h3>Questions? Comments?</h3>
+
+<p>See the <a href="http://p2psockets.JXTA.org">P2P Sockets Homepage</a> or contact Brad Neuberg at <script language="JavaScript">
+<!--
+var name = "bkn3";
+var domain = "columbia.edu";
+document.write('<a href="mailto:' + name + '&#64;' + domain + '">');
+document.write(name + '&#64;' + domain + '</a>');
+document.write('<!-- mailmunge bit -->');
+// -->
+</script>
+
+. Feel free to call him at 1 (510) 938-3263 (Pacific Standard Time, San Francisco) Monday through Friday. Also see his weblog, <a  href="http://www.codinginparadise.org">www.codinginparadise.org</a>, for Mozilla, Java, JXTA, and P2P news.</p>
+
+<p><i>
+<a href="/pub/au/1388">Brad Neuberg</a> 
+is an open source developer living in San
+Francisco.   He is a Senior Software Engineer for Rojo Networks Inc., a weblog and reputation aggregator.
+</i></p>

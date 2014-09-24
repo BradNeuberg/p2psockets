@@ -1,0 +1,654 @@
+<h2>Introduction to the Peer-to-Peer Sockets Project</h2>
+
+by <a href="/pub/au/1388">Brad Neuberg</a><br />
+11/14/2004
+
+<p>The Peer-to-Peer (P2P) Sockets Project reimplements Java's standard <code>Socket</code>, <code>ServerSocket</code>,
+and <code>InetAddress</code> classes to work on the <a href="http://www.jxta.org">JXTA</a> peer-to-peer network, rather than 
+on the standard TCP/IP network. It also includes ports of many popular web packages, such as the Jetty web server, the Apache 
+XML-RPC client and server libraries, and the Apache Jasper JSP engine, to run on the Peer-to-Peer
+Sockets framework.</p>
+
+<p> By the end of this article, you will understand the motivation and
+need for the P2P Sockets package, how to configure and set up the P2P
+Socket libraries to run on your system, how to create and run P2P
+server and client sockets, how to work with the P2P <code>InetAddress</code>
+class, and security issues and limitations in the framework.</p>
+
+<h3>Motivation</h3>
+
+<p>The P2P Sockets project is designed for developers interested in:</p>
+
+<ul>
+<li><p>Returning the end-to-end principle to the Internet.</p></li>
+
+<li><p>An alternative peer-to-peer domain name system that bypasses 
+<a href="http://searchwebservices.techtarget.com/gDefinition/%20%0A0,294236,sid26_gci214011,00.html">ICANN</a> and 
+<a href="http://www.verisign.com">Verisign</a>, is completely decentralized, and responds to updates much quicker than 
+standard <a href="http://www.atis.org/tg2k/_dns.html">DNS</a>.</p></li>
+
+<li><p>An Internet where everyone can create and consume network services, even if they have a dynamic IP address or no 
+IP address, are behind a <a href="http://compnetworking.about.com/library/glossary/bldef-nat.htm">Network Address Translation (NAT) 
+device</a>, or blocked by an ISP's firewall.</p></li>
+
+<li><p>A Web where every peer can automatically start a web server, host an 
+<a href="http://compnetworking.about.com/cs/webservices/g/bldef_xmlrpc.htm">XML-RPC</a> service, and more, and quickly make these 
+available to other peers.</p></li>
+
+<li><p>Easily adding peer-to-peer functionality to Java socket and server socket applications.</p></li>
+
+<li><p>Having servlets and Java Server Pages work on a peer-to-peer network for increased reliability, easier maintenance, and 
+exciting new end-user functionality.</p></li>
+
+<li><p>Playing with a cool technology.</p></li>
+</ul>
+
+<p>The P2P Sockets project reimplements the standard <code>java.net</code> classes on top of the 
+<a href="http://www.JXTA.org">JXTA</a> peer-to-peer network. "Aren't standard TCP/IP sockets and server sockets already peer-to-peer?" 
+some might ask. Standard TCP/IP sockets and server sockets are theoretically peer-to-peer, but in practice are not, due to firewalls, 
+NAT devices, and
+political and technical issues with the Domain Name System (DNS). First, many of the peers on the Internet are given 
+dynamic IP addresses through DHCP, shared or filtered IP addresses through NAT devices, or IP addresses that are very
+hard to reach due to firewalls. Creating server sockets under such
+conditions is either impossible or requires elaborate application-level
+ruses to bypass these restrictions. Second, TCP/IP sockets and
+server sockets depend on DNS to resolve
+human-friendly host names into IP addresses. DNS is theoretically
+semi-decentralized, but on an administrative level, it is centralized
+under ICANN, an unresponsive, non-innovative organization. Further, standard DNS does not deal well with edge-peers that have 
+filtered or dynamic IP addresses, and updates take too long to
+propagate and have no presence information. Developers who wish to create exciting, new applications that extend DNS into 
+new directions, such as storing instant messaging usernames and presence info in DNS, are
+stymied by the DNS system's technical and political issues.</p>
+
+<p>P2P Sockets is based on JXTA, an open source project that creates a peer-to-peer overlay network that sits on top of TCP/IP. Every
+peer on the network is given an IP-address-like number, even if they are
+behind a firewall or don't have a stable IP address. Super-peers on the JXTA network run application-level routers that store special 
+information such as how to reach peers, how to join subgroups of peers,
+and what content peers are making available. JXTA application-level relays can proxy requests between peers that would
+not normally be able to communicate due to firewalls or NAT devices. Peers organize themselves into peer groups, which scope all 
+search requests and act as natural security containers. Any peer can publish and create a peer group in a decentralized way, and 
+other peers can search for and discover these peer groups using other super-peers. Peers communicate using <i>pipes</i>, which are 
+very similar to Unix pipes. Pipes abstract the exact way in which two peers
+communicate, allowing peers to communicate using other peers as intermediaries if they normally would not be able to communicate due 
+to network partitioning.</p>
+
+<p>JXTA is an extremely powerful framework. However, it is not an easy framework to learn, and porting existing software to work on 
+JXTA is not for the faint-of-heart. P2P Sockets effectively hides JXTA by creating a thin illusion that the peer-to-peer 
+network is actually a standard TCP/IP network. If peers wish to become servers, they simply create a P2P server socket with 
+the domain name they want, and the port other peers should use to contact them. P2P clients open socket connections to hosts 
+that are running services on given ports. Hosts can be resolved either by domain name, such as <code>www.nike.laborpolicy</code>, or 
+by IP address, such as <code>44.22.33.22</code>. Behind the scenes, these resolve to JXTA primitives, rather than
+being resolved through DNS or TCP/IP. P2P sockets and server sockets work exactly the
+same as normal TCP/IP sockets and server sockets. For the technically inclined and those who already understand JXTA, 
+a <a href="jxta_p2psockets_table.html" target="_blank" rel="Table">table exists</a> illustrating how standard 
+TCP/IP concepts such as host name, IP address, etc., map to their JXTA equivalents. </p> 
+
+<p>The benefits of taking this approach are many-fold. First, programmers can easily leverage their knowledge of standard 
+TCP/IP sockets and server sockets to work on the JXTA peer-to-peer network without having to learn about JXTA. Second, all 
+of the P2P Sockets code subclasses standard <code>java.net</code> objects, such as <code>java.net.Socket</code>, so existing 
+network applications can quickly be ported to work on a
+peer-to-peer network. The P2P Sockets project already includes a
+large amount of software ported to use the peer-to-peer network, including a web server (<a href="http://jetty.mortbay.org/jetty/">Jetty</a>) 
+that can receive requests and serve
+content over the peer-to-peer network; a servlet and JSP engine (Jetty and <a href="http://jakarta.apache.org/tomcat/">Jasper</a>) 
+that allows existing servlets and JSPs to serve P2P 
+clients; an XML-RPC client and server (<a href="http://ws.apache.org/xmlrpc/">Apache XML-RPC</a>) for accessing and exposing 
+P2P XML-RPC endpoints; an HTTP/1.1 client (<a href="http://jakarta.apache.org/commons/httpclient/">Apache Commons HTTP-Client</a>) 
+that can access P2P web servers; a gateway (<a href="http://scache.sourceforge.net/">Smart Cache</a>) to make it possible for existing 
+browsers to access P2P web sites; and a <a  href="http://www.wikipedia.org/wiki/WikiWiki">WikiWiki</a> 
+(<a href="http://www.jspwiki.org/Wiki.jsp">JSPWiki</a>)
+that can be used to host WikiWikis on your local machine that other peers can access and edit through the P2P network. 
+Even better, all of this software works and looks exactly as it did before being ported. The P2P Sockets abstraction 
+is so strong that porting each of these pieces of software took as little as 30 minutes to several hours. Everything included 
+in the P2P sockets project is open source, mostly under BSD-type licenses, and cross-platform due to being  written in Java.</p>
+
+<p>The 1.1.4 release of P2P Sockets includes powerful autoconfiguration technology through the JXTA Profiler.  The 
+JXTA Profiler is an addition to the JXTA project spun out of P2P Sockets that has now been refactored and reintegrated back into the
+core JXTA.  On startup, a P2P Sockets application automatically scans a peers local environment to determine if they are NATed, 
+firewalled, and more, and autoconfigures the JXTA network stack appropriately.  Programmers and end-users now do not need to 
+manually configure their peers based on their network environment, drastically simplifying deployment and configuration.</p>
+
+<h3>Requirements and Configuration</h3>
+
+<p>You must download and install the following software to develop and work with P2P Sockets.</p>
+
+<ul>
+<li><p><a href="http://www.javasoft.com/products/jdk/1.4">JDK 1.4+</a><br />
+P2P Sockets only works with versions of the JDK after 1.4, because P2P Sockets subclasses <code>java.net.InetAddress</code>. 
+Prior to 1.4, this class was marked <code>final</code> and could not be subclassed.</p></li>
+
+<li><p><a href="http://ant.apache.org/">Ant 1.6.0+</a><br />
+Used to both build and run P2P Sockets and extensions such as Jetty and Jasper.</p></li> 
+
+<li><p><a href="http://p2psockets.jxta.org/releases/unstable/p2psockets-1_1_4.zip">p2psockets-1_1_4.zip</a><br />
+The latest release of the P2P Sockets package. </p></li>
+</ul>
+
+<p>Install and configure the JDK and Ant, and make sure both are in
+your path so they can be run from the command line. Unzip <code>p2psockets-1_1_4.zip</code> into the top level of your 
+hard drive; spaces are not allowed in the directory names, or the P2P Sockets build files will
+not work correctly.</p>
+
+<p>When testing the examples in this tutorial, you must be connected to
+the Internet. This is for two reasons: first, the examples use a
+public JXTA server Sun(tm) has set up that helps bootstrap peers into the
+JXTA network and profile their network condition; and second, on some operating systems (such as on Windows
+XP, by default), the network subsystem shuts down if you are not
+connected to the Internet, preventing client peers and server peers that are 
+running on the same machine from finding or communicating with each
+other.</p>
+
+<h3>Creating a P2P Server Socket</h3>
+
+<p>Creating a P2P server socket is exactly like creating a normal <code>java.net.ServerSocket</code>:</p>
+
+<pre><code>// start a server socket for the domain
+// "www.nike.laborpolicy" on port 100
+ServerSocket server = new P2PServerSocket("www.nike.laborpolicy", 100);</code></pre>
+
+<p>This creates a server socket listening for client requests for the
+host <code>www.nike.laborpolicy</code> on port <code>100</code>. Under
+the covers, the <code>P2PServerSocket</code> code publishes a JXTA Pipe Advertisement and formats
+its <code>Name</code> field a certain way, such as 
+<code>&lt;Name&gt;Paper Airplane/44.33.67.22,www.nike.laborpolicy:100&lt;/Name&gt;.  The 
+<code>Paper Airplane</code> value is the name of your custom P2P network, described later, while
+the IP address is generated from the host name using a special algorithm also described later.
+Using this <code>Name</code> field, we can later search for a given host name across JXTA rendezvous
+peers using wildcards, such as <code>Paper Airplane/44.33.67.22,www.nike.laborpolicy:*</code> to
+search for all pipes that have the given host name. 
+
+<p>After creating this server socket, you can now treat it as an ordinary <code>java.net.ServerSocket</code>
+in your code, waiting for a client and then retrieving an <code>InputStream</code> and <code>OutputStream</code>
+from the client and communicating normally:</p> 
+
+<pre><code>Socket client = server.accept();
+
+// now communicate with this client
+java.io.DataInputStream in = new DataInputStream(client.getInputStream());
+java.io.DataOutputStream out = new DataOutputStream(client.getOutputStream());
+out.writeUTF("Hello client world!");
+String results = in.readUTF();
+System.out.println(results);</code></pre>
+
+<p>Even though the client looks like a normal <code>java.net.Socket</code>, it is actually connecting and communicating to 
+your server through the JXTA peer-to-peer network, with requests and responses possibly being relayed by other peers to 
+traverse NATs and network partitions. All of this is hidden from you, however. </p>
+
+<p>Unlike normal server sockets, we need to initialize and sign into our peer-to-peer network. Before you can create 
+the <code>P2PServerSocket</code>, therefore, you must sign in:</p>
+
+<pre><code>// sign into the peer-to-peer network, using
+// the username "serverpeer", the password "serverpeerpassword",
+// create/find a scoped peer-to-peer network named "TestNetwork",
+// and create this account if it does not exist
+P2PNetwork.signin("serverpeer", "serverpeerpassword", "TestNetwork", true);</code></pre>
+
+<p>The first two arguments are the username and password to use when signing into the peer-to-peer network. If the user has 
+never signed into the P2P Sockets network before, the JXTA Profiler scans the peer's local environment and determines if 
+they are NATed, firewalled, and more.  P2P Sockets configuration information is then automatically written out and the 
+peer joins the network.  The username and password given are used to lock and secure the configuration information. If the 
+peer already has configuration information, then the username and password are checked to ensure that correct values were given. 
+In your own application, you might retrieve these values either from the command line or from a GUI. The fourth argument 
+(<code>true</code>, in the example above) controls whether to create a JXTA configuration for this peer if there is not one
+already there.  In the example above we indicate that we want to create a JXTA configuration if this is the first time this
+user has ever signed in, using the given username and password to initialize the configuration.  The JXTA Profiler will automatically
+scan this peer's network environment and configure it accordingly.
+
+<p>The third value (<code>TestNetwork</code>, in the above example) is a unique name that will be given to your
+peer-to-peer network. Different peer-to-peer networks that are based on P2P Sockets can co-exist without knowing about each other. 
+Clients and servers create and resolve their server sockets and sockets in a specific peer-to-peer network. The final value 
+is the name of your own private, application-specific peer-to-peer network.
+If you create your server socket in the peer-to-peer network named <code>TestNetwork</code> while a client signs into 
+another peer-to-peer network named <code>InstantMessagingNetwork</code>, for example, then they will not be able to find each 
+other or communicate.</p>
+
+<p>As a programmer, you will choose your network name to go along with the name of your application or the type of 
+network you are creating, such as <code>MyApplicationsNetwork</code> or <code>AcmeCompanyInformationNetwork</code>.</p> 
+
+<code>P2PNetwork</code> has two other methods that you will find usefull in your applications.  The first is 
+<code>P2PNetwork.createAccount</code>, which will create an account for a new user, and <code>P2PNetwork.accountExists</code>,
+which will determine if an account already exists for a given username.  See the JavaDoc for the <code>P2PNetwork</code>
+for details on how to use these methods.
+
+<p>The final code looks as follows:</p> 
+
+<pre><code>import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.DataOutputStream;
+import java.io.DataInputStream;
+import java.net.Socket;
+import java.net.ServerSocket;
+import org.p2psockets.P2PServerSocket;
+import org.p2psockets.P2PNetwork;
+
+public class ExampleServerSocket {
+   public static void main(String args[]) {
+      try {
+         // sign into the peer-to-peer network, 
+         // using the username "serverpeer", the password "serverpeerpassword",
+         // create/find a scoped peer-to-peer network named "TestNetwork",
+         // and create a new JXTA configuration if one doesn't exist yet
+         System.out.println("Signing into the P2P network...");
+         P2PNetwork.signin("serverpeer", "serverpeerpassword", "TestNetwork", true);
+
+         // start a server socket for the domain
+         // "www.nike.laborpolicy" on port 100
+         System.out.println("Creating server socket for " + "www.nike.laborpolicy:100...");
+         ServerSocket server = new P2PServerSocket("www.nike.laborpolicy", 100);
+         
+         // wait for a client
+         System.out.println("Waiting for client...");
+         Socket client = server.accept();
+         System.out.println("Client Accepted.");
+		 
+         // now communicate with this client
+         DataInputStream in = new DataInputStream(client.getInputStream());
+         DataOutputStream out = new DataOutputStream(client.getOutputStream());
+         out.writeUTF("Hello client world!");
+         String results = in.readUTF();
+         System.out.println("Message from client: " + results);
+		 
+         // shut everything down!
+         client.close();
+         server.close();
+      }
+
+      catch (Exception e) {
+         e.printStackTrace();
+         System.exit(1);
+      }
+   }
+}</code></pre>
+
+<h3>Using a P2P Socket to Contact a P2P Server Socket</h3>
+
+<p>Creating and using a P2P socket to connect to the P2P server socket you created is just as easy.</p>
+
+<p>First, sign into your peer-to-peer network:</p>
+
+<pre><code>// sign into the peer-to-peer network,
+// using the username "clientpeer", the password "clientpeerpassword",
+// create/find a scoped peer-to-peer network named "TestNetwork",
+// and create a new JXTA configuration if one doesn't exist yet
+P2PNetwork.signin("clientpeer", "clientpeerpassword", "TestNetwork", true);</code></pre>
+
+<p>Next, create your P2P socket with the host name and port to which you want to connect:</p>
+
+<pre><code>// create a socket to connect to the domain
+// "www.nike.laborpolicy" on port 100
+Socket socket = new P2PSocket("www.nike.laborpolicy", 100);</code></pre>
+
+<p>Now you can easily communicate with the server:</p>
+
+<pre><code>// now communicate with this server
+java.io.DataInputStream in = new DataInputStream(socket.getInputStream());
+java.io.DataOutputStream out = new DataOutputStream(socket.getOutputStream());
+String results = in.readUTF();
+System.out.println(results);
+out.writeUTF("Hello server world!");</code></pre>
+
+<p>Here is the full source code for the client:</p>
+
+<pre><code>import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.DataOutputStream;
+import java.io.DataInputStream;
+import java.net.Socket;
+import org.p2psockets.P2PSocket;
+import org.p2psockets.P2PNetwork;
+
+public class ExampleClientSocket {
+   public static void main(String args[]) {
+      try {
+         // sign into the peer-to-peer network,
+         // using the username "clientpeer", the password "clientpeerpassword",
+         // create/find a scoped peer-to-peer network named "TestNetwork",
+         // and don't create a new JXTA configuration if one doesn't exist yet
+         System.out.println("Signing into the P2P network..");
+         P2PNetwork.signin("clientpeer", "clientpeerpassword", "TestNetwork", true);
+		
+         // create a socket to connect to the
+         // domain "www.nike.laborpolicy" on port 100
+         System.out.println("Connecting to server socket! at " + "www.nike.laborpolicy:100...");
+         Socket socket = new P2PSocket("www.nike.laborpolicy", 100);
+		 System.out.println("Connected.");
+		 
+         // now communicate with this server
+         DataInputStream in = new DataInputStream(socket.getInputStream());
+         DataOutputStream out = new DataOutputStream(socket.getOutputStream());
+         String results = in.readUTF();
+         System.out.println("Message from server: " + results);
+         out.writeUTF("Hello server world!");
+		 
+         // shut everything down
+         socket.close();
+      }
+	  
+      catch (Exception e) {
+         e.printStackTrace();
+         System.exit(1);
+      }
+   }
+}</code></pre>
+
+<h3>Running the P2P Server Socket and Socket Examples</h3>
+
+<p>Open two separate shell windows. In both windows,
+type the following to set some system variables needed by the Ant
+makefiles (modify the variables below to point to where you have
+installed P2P Sockets and your JDK, respectively):</p>
+
+<pre><code>set p2psockets_home=c:\p2psockets
+set JAVA_HOME=c:\j2sdk1.4.1</code></pre>
+
+<p>In both windows, change to the <i>p2psockets</i> directory where you installed the P2P Sockets package. The
+example source files are in <i>p2psockets/src/examples</i> and are named <i>ExampleClientSocket.java</i> and 
+<i>ExampleServerSocket.java</i>, respectively. Everything has already been compiled into the <i>p2psockets/dist/examples</i> directory, 
+but if you want to compile them again, enter the following in one of the two shells:</p>
+
+<pre><code>ant clobber build jar</code></pre>
+
+<p>To run the client and server, in one window enter the following to
+start the example P2P server socket:</p>
+
+<pre><code>ant example-serversocket-run</code></pre>
+
+<p>You should see something like the following printed in the server peer window:</p>
+
+<pre><code>Buildfile: build.xml
+example-serversocket-run:
+No peer configuration found, profiling peer.
+Profiling...
+This peer is NATed or firewalled, and has the IP address 192.168.0.2
+Peer profiled.
+Signing into the P2P network...
+Using the application peer group name TestNetwork
+Waiting for RendezVous Connection.........
+Finished connecting to RendezVous.
+Creating server socket for
+www.nike.laborpolicy:100...
+Waiting for client...</code></pre>
+
+<p>In the other window, enter the following to start the example P2P client socket:</p>
+
+<pre><code>ant example-clientsocket-run</code></pre> 
+
+<p>You should see the following printed in the client peer window:</p> 
+
+<pre><code>Buildfile: build.xml
+example-clientsocket-run:
+No peer configuration found, profiling peer.
+Profiling...
+This peer is NATed or firewalled, and has the IP address 192.168.0.2
+Peer profiled.
+Signing into the P2P network..
+Using the application peer group name TestNetwork
+Waiting for RendezVous Connection......
+Finished connecting to RendezVous.
+Connecting to server socket at
+www.nike.laborpolicy:100...
+Connected.
+Message from server: Hello client world!</code></pre>
+
+<p>In the server window, you should now see the following:</p>
+
+<pre><code>Buildfile: build.xml
+example-serversocket-run:
+No peer configuration found, profiling peer.
+Profiling...
+This peer is NATed or firewalled, and has the IP address 192.168.0.2
+Peer profiled.
+Signing into the P2P network...
+Using the application peer group name TestNetwork
+Waiting for RendezVous Connection.........
+Finished connecting to RendezVous.
+Creating server socket for
+www.nike.laborpolicy:100...
+Waiting for client...
+Client Accepted.
+Message from client: Hello server world!</code></pre>
+
+<p>Congratulations! You've just created a simple peer-to-peer
+network with very little work or extra knowledge needed above
+understanding basic Java sockets and server sockets.</p>
+
+<p>If you have trouble, ensure that you are connected to the Internet, that you are
+running Java 1.4+, and that you did not install the P2P Sockets
+package into a directory with spaces in its name (such as in <i>Program Files/p2psockets</i>). You 
+might also have to delve into the JXTA Configurator if your machine is in an unusual network configuration.
+
+<h3>Finding Out if a Host Name, IP Address, or Port is Taken</h3> 
+
+<p>By default, the <code>P2PInetAddress</code> and <code>P2PServerSocket</code> classes
+don't check to make sure a given host name, IP address, or port is taken. The reason for this is so that application developers can use 
+P2P server sockets in unique ways that are not possible with normal sockets. For example, different peers can start up P2P server 
+sockets for the same host name and port in order to provide failover and
+scalability. If we were to throw an exception when a server socket was started because the address was already bound, then this 
+possibility would be precluded.</p>
+
+<p>However, methods are provided to check if a given host name, IP address, or port is already taken. These are static methods on the 
+class <code>java.net.P2PNameService</code>. Examples are shown below:</p>
+
+<pre><code>boolean nameAvailable = P2PNameService.isHostNameTaken("www.nike.laborpolicy");
+boolean portAvailable = P2PNameService.isPortTaken("www.nike.laborpolicy", 80);
+boolean addressAvailable = P2PNameService.isIPAddressTaken("33.44.74.12");</code></pre>
+
+<p>Use these before creating your P2P server sockets if you want your
+server to be a unique instance (read the <a href="#limitations">Limitations
+and Security Concerns</a> section, though, on P2P domain-name spoofing).</p> 
+
+<p>You have now learned the bulk of working with P2P sockets and server
+sockets. The following sections detail technical information on
+how the P2P Sockets package provides full compatibility with standard
+TCP/IP sockets and server sockets. You don't necessarily need to
+know this information, but should know it if you will be working with
+the <code>InetAddress</code> class or the Loopback (<code>127.0.0.1</code>)
+or Any (<code>0.0.0.0</code>) addresses. If you skip these sections, please make sure to read the
+section <a href="#limitations">Limitations and Security Concerns</a> at the end of this article.</p>
+
+<h3>Working with the P2P <code>InetAddress</code> Class</h3>
+
+<p>The P2P Sockets package includes an implementation of
+<code>java.net.InetAddress</code> that works the same as <code>InetAddress</code>
+and that subclasses it. </p>
+
+<p>The following examples show different ways in which
+to create a <code>P2PInetAddress</code> object.</p> 
+
+<pre><code>// Create an InetAddress where we know the host
+// name but not the IP address.
+// This will not search the network to find the
+// corresponding IP address.
+InetAddress inetAddr = P2PInetAddress.getByAddress("www.nike.laborpolicy", null);
+
+// Create an InetAddress where we know the IP
+// address but not the host name.
+// This will not search the network to find the
+// corresponding host name.
+InetAddress inetAddr = P2PInetAddress.getByAddress("55.32.77.34", null);
+
+// Create an InetAddress where we know both the
+// IP address and the host name.
+// No searching will occur on the network
+byte ipAddress[] = new byte[4];
+ipAddress[0] = 55;
+ipAddress[1] = 32;
+ipAddress[2] = 77;
+ipAddress[3] = 34;
+InetAddress inetAddr = P2PInetAddress.getByAddress("www.nike.laborpolicy", ipAddress);
+
+// Create an InetAddress object using the hostname. 
+// The network will be searched for the corresponding IP address
+InetAddress inetAddr = P2PInetAddress.getByName("www.boobah.cat");
+
+// Create an InetAddress object using the hostname.  
+// The network will be searched for the corresponding IP address
+InetAddress inetAddress[] = P2PInetAddress.getAllByName("www.boobah.cat");
+
+// Create an InetAddress object using the IP address.  
+// The network will be searched for the corresponding host name 
+byte ipAddress[] = new byte[4];
+ipAddress[0] = 55;
+ipAddress[1] = 32;
+ipAddress[2] = 77;
+ipAddress[3] = 34;
+InetAddress inetAddr = P2PInetAddress.getByAddress(ipAddress);
+
+// Get the host name and IP address for the local host
+InetAddress inetAddr = P2PInetAddress.getLocalHost();</code></pre>
+
+<p>Once you have an <code>P2PInetAddress</code> object, you can treat it like a normal <code>InetAddress</code> object:</p>
+
+<pre><code>InetAddress inetAddr = P2PInetAddress.getByName("www.boobah.cat");
+String hostName = inetAddr.getHostName();
+String ipAddressString = inetAddr.getHostAddress();
+byte ipAddress[] = inetAddr.getAddress();
+boolean isLocalhost = inetAddr.isLoopbackAddress();</code></pre>
+
+<p>P2P server sockets have an interesting problem that standard server sockets do not have. Because the P2P Sockets system 
+implements its own simple DNS system, we need a way to create an <code>InetAddress</code>
+for a host name that does not exist yet; we explicitly <i>don't</i> want to search the network to
+resolve a given host name into an IP address, or vice versa, because neither of them exist yet. We would then use 
+this <code>InetAddress</code> object to instantiate a <code>P2PServerSocket</code> to bind a new host name and
+IP address. P2P Sockets currently overloads the standard <code>getByAddress(String host, byte address[])</code>
+method to avoid resolving information that is not given. This is the recommended method to use to generate a <code>P2PInetAddress</code> 
+object, since contacting the network to resolve the extra information is wasteful and
+not really needed. To check to see if a given host name or IP address is already taken, use the methods on the 
+<code>P2PNameService</code> class, which were detailed in the section above:</p>
+
+<p><code>InetAddress</code> objects can be used to start P2P sockets or server sockets,
+just as in standard Java sockets and server sockets:</p>
+
+<pre><code>InetAddress inetAddr = P2PInetAddress.getByAddress("www.boobah.cat", null);
+ServerSocket server = new P2PServerSocket(inetAddr, 80);
+.......
+.......
+.......
+InetAddress inetAddr = P2PInetAddress.getByAddress("www.boobah.cat", null);
+Socket server = new P2PSocket(inetAddr, 80);</code></pre>
+
+<h3>The Loopback (<code>127.0.0.1</code>) and Any (<code>0.0.0.0</code>) Addresses</h3>
+
+<p>The P2P Sockets package provides a simple implementation of the <i>Any</i> IP address, which is <code>0.0.0.0</code>. 
+In normal TCP/IP parlance for server sockets, the Any interface says "start a server socket
+with any of the available IP addresses available on this machine; I don't know which it is and don't care." In the 
+context of P2P Server Sockets, hosts can not be "multi-homed;" i.e., have more than one IP address. Instead, they are given an 
+automatic host name that is autogenerated from their JXTA peer names. For example, if a peer is named <code>BradGNUberg</code>, 
+then the peer would be given the automatic host name <code>www.BradGNUberg.peer</code>.
+By default, the prefix is "www." and the suffix is ".peer". These values are currently not customizable, but future versions 
+will expose this capability.</p>
+
+<p>We use this automatic peer name to resolve the Any or Loopback address:</p>
+
+<pre><code>// In the following example, assume the peer's
+// local JXTA name is BradGNUberg.
+InetAddress inetAddr = P2PInetAddress.getLocalHost();
+ServerSocket socket = new P2PServerSocket(inetAddr, 100);
+// returns "www.BradGNUberg.peer"
+String hostName = socket.getHostName();</code></pre>
+
+<p>Before this will work, however, you must start up a <code>P2PServerSocket</code>
+for the localhost on a given port.</p>
+
+<p>P2P server sockets also provides support for another feature for
+compatibility with normal server sockets, though it will probably only
+rarely be used. Normal TCP/IP server sockets can be started with
+the any interface and no port specified. This would start the
+server socket on a random "private" port about <code>1024</code>. The
+<code>P2PServerSocket</code> class supports the same thing; if you
+start it with no host name or the Any interface and no port, a random port number will
+be generated above <code>1024</code> but less than <code>65536</code>. You could then retrieve
+this port number from the server socket and send it to client sockets 
+over another channel to inform them of a private, random port that is available.</p>
+
+<a name="limitations" />
+<h3>Limitations and Security Concerns</h3>
+
+<p>The P2P Sockets project currently has the following limitations and security issues:</p>
+
+<ul>
+<li><p>Spoofing host names and IP address on the peer network is trivial, as no mechanism currently exists to securely 
+associate a given host name or IP address with a specific peer or peer group.</p></li>
+
+<li><p>The network is vulnerable to denial-of-service attacks, where one peer floods the network with requests or 
+attempts to continuously create server sockets.</p></li>
+
+<li><p>The P2P Sockets package does not currently tie into the 
+<a  href="http://java.sun.com/docs/books/tutorial/security1.2/">JVM Security Manager architecture</a>, which would 
+sandbox the code according to a security policy. Once a peer is exposed on a network, other peers could take advantage of flaws 
+in the Java Virtual Machine or the P2P Sockets layer itself to compromise the peer computer. Being able to sandbox the peer code 
+away from native machine resources would help this, but is not currently possible, since P2P Sockets doesn't check the security 
+manager before any operation. It is also dangerous to include a JSP engine on an ordinary user's personal computer, as JSP 
+depends on <code>javac</code>, the Java compiler. It is dangerous to include a network path to a language compiler, as this 
+is a common way to compromise a computer and gain further access. You should precompile your JSPs into servlets and bundle the 
+servlets with your peer programs instead of the full JSP engine.</p></li> 
+
+<li><p>Multicast IP addresses and <a href="http://java.sun.com/docs/books/tutorial/networking/datagrams/broadcasting.html">Multicast sockets</a> 
+are not supported.</p></li> 
+
+<li><p><a href="http://java.sun.com/docs/books/tutorial/networking/datagrams/index.html">UDP sockets</a> are not supported.</p></li> 
+
+<li><p>Site-local/private IP addresses (<code>192.168.x.x</code>) are not supported. Create your own private peer group if you want to 
+simulate a private site address.</p></li>
+
+<li><p>The various socket options, such as <code>SoLinger</code>, are not supported and are ignored.</p></li>
+
+<li><p>Non-blocking I/O socket channels are not supported.</p></li>
+
+<li><p>Loopback socket servers are exposed outside of their local machine, which is incorrect.</p></li> 
+
+<li><p>SSL/HTTPS is not supported.</p></li>
+
+</ul>
+
+<h3>License Information</h3>
+
+<p>P2P Sockets, including the source code in this article, is under the 
+<a href="http://www.jxta.org/license.html">Sun Project JXTA Software License</a>.</p>
+
+<h3>Resources</h3>
+
+<ul>
+<li>"<a href="2.html">How to Create Peer-to-Peer Web Servers, Servlets, JSPs, and 
+XML-RPC Clients and Servers</a>"</li>
+<li><a href="http://p2psockets.JXTA.org">P2P Sockets Homepage</a></li>
+<li><a href="http://www.JXTA.org">JXTA Homepage</a></li>
+<li>"<a href="http://www.wikipedia.org/wiki/WikiWiki">What is a WikiWiki?</a>"</li>
+<li><a href="http://www.javasoft.com/products/jdk/1.4">JDK 1.4</a></li>
+<li><a href="http://ant.apache.org/index2.html">Ant 1.5.3</a> </li>
+<li><a href="http://p2psockets.jxta.org/releases/unstable/p2psockets-1_1_4.zip">p2psockets-1_1_4.zip</a></li>
+<li><a href="http://www.codinginparadise.org">Brad GNUberg's Weblog</a></li>
+<li>Email Brad GNUberg at <script language="JavaScript">
+<!--
+var name = "bkn3";
+var domain = "columbia.edu";
+document.write('<a href="mailto:' + name + '&#64;' + domain + '">');
+document.write(name + '&#64;' + domain + '</a>');
+document.write('<!-- mailmunge bit -->');
+// -->
+</script>
+
+</li>
+</ul>
+
+<h3>Questions? Comments?</h3>
+
+<p>See the <a href="http://p2psockets.jxta.org">P2P Sockets Homepage</a> or contact Brad Neuberg at <script language="JavaScript">
+<!--
+var name = "bkn3";
+var domain = "columbia.edu";
+document.write('<a href="mailto:' + name + '&#64;' + domain + '">');
+document.write(name + '&#64;' + domain + '</a>');
+document.write('<!-- mailmunge bit -->');
+// -->
+</script>
+
+. Feel free to call him at 1 (510) 938-3263 (Pacific Standard Time, San Francisco) Monday through Friday. Also see his weblog, <a  href="http://www.codinginparadise.org">www.codinginparadise.org</a>, for Mozilla, Java, JXTA, and P2P news.</p>
+
+<p><i>
+<a href="/pub/au/1388">Brad Neuberg</a> 
+is an open source developer living in San
+Francisco.   He is a Senior Software Engineer for <a href="http://www.rojo.com">Rojo Networks Inc.</a>, 
+a weblog and reputation aggregator.
+</i></p>

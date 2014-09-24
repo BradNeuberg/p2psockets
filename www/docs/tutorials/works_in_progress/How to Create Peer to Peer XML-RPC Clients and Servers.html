@@ -1,0 +1,277 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <title>How to Create Peer-to-Peer XML-RPC Clients and Servers</title>
+  <meta name="author" content="Brad Neuberg">
+  <meta name="description"
+ content="The P2P Sockets Project has ported over existing software to seamlessly work on the Jxta P2P network, including the Apache XML-RPC Client and Server libraries.  This tutorial describes how to use these ported libraries in your applications.">
+</head>
+<body>
+<div style="text-align: center;"><big><big><big>How to Create
+Peer-to-Peer <br>
+XML-RPC Clients and Servers</big></big></big></div>
+<div style="text-align: center;"><a
+ href="http://www.codinginparadise.org">Brad GNUberg</a>,
+bkn3@columbia.edu<br>
+</div>
+<small> </small><br>
+<div style="text-align: center;"><big><big>Summary</big></big><br>
+<big><big> </big></big>The P2P Sockets Project has ported over existing
+software to seamlessly work on the Jxta P2P network, including the
+Apache XML-RPC Client and Server libraries.&nbsp; This tutorial
+describes how to use these ported libraries in your applications.<br>
+<br>
+</div>
+<big> </big>
+<div style="text-align: center;"><big>Questions? Comments?</big><small><br>
+See the <a href="http://p2psockets.jxta.org">P2P Sockets Homepage</a>
+or contact Brad Neuberg at bkn3@columbia.edu. &nbsp;Feel free to call
+him at 1-510-938-3263 (Pacific Standard Time, San Francisco) Monday
+through Friday, not including weekends. &nbsp;</small><small>Also see
+his weblog, <a href="http://www.codinginparadise.org">www.codinginparadise.org</a>,
+for Mozilla, Java, Jxta, and P2P news.</small> </div>
+<big><big><br>
+What is the P2P Sockets Project?<br>
+<small><small> Are you interested in:</small></small><br>
+</big></big>
+<ul>
+  <li>returning the end-to-end principle to the Internet?</li>
+  <li>an alternative peer-to-peer domain name system that bypasses
+ICANN and Verisign, is completely decentralized, and responds to updates
+much quicker than standard DNS?</li>
+  <li>an Internet where everyone can create and consume network
+services, even if they have a dynamic IP address or no IP address, are
+behind a Network Address Translation (NAT) device, or blocked by an
+ISP's firewall?</li>
+  <li>a web where every peer can automatically start a web server, host
+an XML-RPC service, and more and quickly make these available to other
+peers?</li>
+  <li>easily adding peer-to-peer functionality to your Java socket and
+server socket applications?</li>
+  <li>having your servlets and Java Server Pages work on a peer-to-peer
+network for increased reliability, easier maintenence, and exciting new
+end-user functionality?</li>
+  <li>playing with a cool technology?<br>
+  </li>
+</ul>
+If you answered yes to any of the above, then welcome to the
+Peer-to-Peer Sockets project! &nbsp;The P2P Sockets project rebuilds
+Java's java.net classes to work on&nbsp;the <a
+ href="http://www.jxta.org">Jxta</a> peer-to-peer network.<sup><a
+ href="file:///C:/virtualsockets/docs/tutorials/How%20to%20Create%20Peer-to-Peer%20Web%20Servers,%20Servlets,%20and%20JSPs.html#footnote1">1</a></sup>.
+&nbsp;While standard TCP/IP sockets and server-sockets are
+theoretically peer-to-peer,&nbsp; in practice they are not due to
+firewalls, Network Address Translation (NAT) devices, and political and
+technical issues with the Domain Name System (DNS)<sup><a
+ href="file:///C:/virtualsockets/docs/tutorials/How%20to%20Create%20Peer-to-Peer%20Web%20Servers,%20Servlets,%20and%20JSPs.html#footnote2">2</a></sup>.
+&nbsp;The P2P Sockets project can automatically include these machines
+that are usually unreachable, and includes a simple, light-weight
+distributed domain name system that can be extended into interesting
+new directions for your applications. &nbsp;<br>
+<br>
+The P2P Sockets project already includes a large amount of software
+ported to use the peer-to-peer network, including a web server (Jetty)
+that can receive requests and serve content over the peer-to-peer
+network; a servlet and JSP engine (Jetty and Jasper) that allows
+existing servlets and JSPs to serve P2P clients; an XML-RPC client and
+server (Apache XML-RPC) for accessing and exposing P2P XML-RPC
+endpoints; an HTTP/1.1 client (Apache Commons HTTP-Client) that can
+access P2P web servers; a gateway (Smart Cache) to make it possible for
+existing browsers to access P2P web sites; and a <a
+ href="http://www.wikipedia.org/wiki/WikiWiki">WikiWiki</a> (JSPWiki)
+that can be used to host WikiWikis on your local machine that other
+peers can access and edit through the P2P network. Even better, all of
+this software works and looks exactly as it did before being ported.
+&nbsp;The P2P Sockets abstraction is so strong that porting each of
+these pieces of software took as little as 30 minutes to several hours.
+&nbsp;Everything included in the P2P sockets project is open-source,
+mostly under BSD-type licenses, and cross-platform due to being written
+in Java.<br>
+<br>
+This tutorial explains how to create XML-RPC servers that expose their
+functions over a peer-to-peer network, and XML-RPC clients that access
+this functionality over the peer network. &nbsp;Why would you want to
+do this? &nbsp;First, XML-RPC servers can be run on machines that would
+ordinarily not be resolvable or reachable, due to the issues discussed
+above. &nbsp;Second, you can now leverage your existing XML-RPC skills
+to create peer-to-peer networks without learning a new API. &nbsp;Peers
+in your network can assume the roles of both XML-RPC client and server,
+interacting with other peers who are themselves both XML-RPC clients
+and servers. &nbsp;The XML-RPC functions exposed could be related to
+instant messaging, blogging using the MetaWeblog XML-RPC API, editing
+WikiWikis using the WikiWiki XML-RPC API, and more. &nbsp;Now every
+peer in the network, regardless of whether their cable ISP treats them
+as second-class citizens, can easily be both a writeable and readable
+node, opening the possibility of a Two Way Web. &nbsp;Even better,
+everything is built above a modified version of Jetty, an open-source
+web server that is specifically designed to be small and embeddable in
+other applications, making it easy for you to roll P2P functionality
+into your own applications.<br>
+<br>
+For more information on using the raw P2P sockets and server sockets in
+your own code, and for details information on how the peer network
+itself is created, see the tutorial <a
+ href="file:///C:/virtualsockets/docs/tutorials/Introduction%20to%20Peer-to-Peer%20Sockets.html">Introduction
+to Peer-to-Peer Sockets</a>. &nbsp;For information on creating P2P web
+servers, servlets, JSPs, and Web Application Archives (WARs), see the
+tutorial <a
+ href="How%20to%20Create%20Peer-to-Peer%20Web%20Servers,%20Servlets,%20and%20JSPs.html">How
+to Create Peer-to-Peer Web Servers, Servlets, and JSPs</a>.<br>
+<br>
+<big><big>Requirements and Configuration<br>
+</big></big>You must download and install the following software to
+develop and work with P2P Sockets:<br>
+<ul>
+  <li><a
+ href="file:///C:/virtualsockets/docs/tutorials/www.javasoft.com/products/jdk/1.4">JDK
+1.4+</a> - P2P Sockets only works with versions of the JDK after 1.4
+because P2P Sockets subclasses java.net.InetAddress. &nbsp;Prior to 1.4
+this class was marked <span style="font-style: italic;">final</span> and
+could not be subclassed. &nbsp;The JDK is needed if you want to use
+JSPs; otherwise the Java Runtime Environment (JRE) can be used instead.</li>
+  <li><a href="http://ant.apache.org/index2.html">Ant 1.5.3+</a> - Used
+to both build and run P2P Sockets and extensions such as Jetty and Jasper</li>
+  <li><a
+ href="http://p2psockets.jxta.org/archive/P2PSockets-1.0-beta1.zip">P2PSockets-1.0-beta1.zip</a>
+- The latest release of the P2P Sockets package.<br>
+  </li>
+</ul>
+Install and configure the JDK and Ant, and make sure both are in your
+path so they can be run from the command-line. &nbsp;Unzip the
+P2PSockets zip file into the top-level of your hard-drive; spaces are
+not allowed in the directory names, or the P2P Sockets build files will
+not work correctly.<br>
+<br>
+The P2P Sockets directory already includes two different directories, <span
+ style="font-style: italic;">test/clientpeer</span> and <span
+ style="font-style: italic;">test/serverpeer</span>, that have Jxta
+configuration information already set up (these are in the hidden
+directories <span style="font-style: italic;">test/clientpeer/.jxta</span>
+and <span style="font-style: italic;">test/serverpeer/.jxta</span>,
+respectively). &nbsp;If you want to learn more about how to configure
+Jxta, read about the <a
+ href="http://www.onjava.com/pub/a/onjava/excerpt/jxtaian_2/index3.html">Jxta
+Configurator</a>. &nbsp;The two test peers have already been configured
+for the worst possible case, which is that you are behind a firewall and
+a NAT device, which means you must use other intermediate peers to relay
+your requests; this configuration will work even if you are not under
+these conditions. &nbsp;One of the nice aspects about Jxta, though, is
+that this will all be transparent and hidden from you as you program and
+use the system.<br>
+<br>
+When testing the examples in this tutorial, you must be connected to
+the Internet. &nbsp;This is for two reasons; first, the examples use a
+public Jxta server Sun has set up that helps bootstrap peers into the
+Jxta network; and second, on some operating systems, such as on Windows
+XP by default, the network subsystem shuts down if you are not connected
+to the Internet, preventing client peers and server peers that are
+running on the same machine from finding or communicating with each
+other.<br>
+<br>
+<big><big>Creating an Peer-to-Peer XML-RPC Server using Apache XML-RPC<br>
+</big></big>Creating a P2P XML-RPC server is very similar to creating a
+normal, non-peer-to-peer one. &nbsp;An example is shown below, with
+portions that are special to creating P2P XML-RPC servers shown in bold:<br>
+<br>
+<br>
+<br>
+<big><big>Creating an Peer-to-Peer XML-RPC Client </big></big><big><big>using
+Apache XML-RPC</big></big><br>
+text<br>
+<br>
+<big><big>Creating an XML-RPC Client using Mozilla</big></big><big><big></big></big><br>
+&nbsp; (Shows JavaScript for an XML-RPC client, talks about how to
+setup the P2PWebProxy, about configuring your browser to make it your
+proxy, then how to start the proxy and your XML-RPC server, then how to
+access it using the JavaScript debugger in Mozilla.)<br>
+<br>
+<big><big>Limitations and Security Concerns<br>
+</big></big>text<br>
+<br>
+<big><big>Footnotes</big></big><br>
+<sup><a name="footnote1"></a><span style="font-weight: bold;">1</span></sup>Jxta
+is an open-source project that creates a peer-to-peer overlay network
+that sits on top of TCP/IP. &nbsp;Ever peer on the network is given an
+IP-address like number, even if they are behind a firewall or don't have
+a stable IP address. &nbsp;Super-peers on the Jxta network run
+application-level routers which store special information such as how to
+reach peers, how to join sub-groups of peers, and what content peers are
+making available. &nbsp;Jxta application-level relays can proxy requests
+between peers that would not normally be able to communicate due to
+firewalls or NAT devices. &nbsp;Peers organize themselves into Peer
+Groups, which scope all search requests and act as natural security
+containers. &nbsp;Any peer can publish and create a peer group in a
+decentralized way, and other peers can search for and discover these
+peer groups using other super-peers. &nbsp;Peers communicate using
+Pipes, which are very similar to Unix pipes. &nbsp;Pipes abstract the
+exact way in which two peers communicate, allowing peers to communicate
+using other peers as intermediaries if they normally would not be able
+to communicate due to network partitioning.<br>
+<br>
+<sup><a name="footnote2"></a><span style="font-weight: bold;">2</span></sup>First,
+many of the peers on the Internet are given dynamic IP addresses
+through DHCP, shared or filtered IP addresses through NAT devices, or IP
+addresses that are very hard to reach due to firewalls. &nbsp;Creating
+server sockets under such conditions is either impossible or requires
+elaborate application-level ruses to bypass these restrictions.
+&nbsp;Second, TCP/IP sockets and server sockets depend on the Domain
+Name System (DNS) to resolve human-friendly host names into IP
+addresses. &nbsp;DNS is theoretically semi-decentralized, but on an
+administrative level it is centralized under ICANN, an unresponsive,
+non-innovative organization. &nbsp;Further, standard DNS does not deal
+well with edge-peers that have filtered or dynamic IP addresses, and
+updates take too long to propagate and have no presence information.
+&nbsp;Developers who wish to create exciting, new applications that
+extend DNS into new directions, such as storing instant messaging
+usernames and presence info in DNS, are stymied by the DNS systems
+technical and political issues.<br>
+<br>
+<br>
+<hr style="width: 100%; height: 2px;"><br>
+<br>
+<big><big>Resources<br>
+</big></big>
+<ul>
+  <li>Resource 1</li>
+  <li>Resource 2<br>
+  </li>
+</ul>
+<br>
+<big><big>About the Author</big></big><br>
+<a href="http://www.codinginparadise.org"><img
+ src="images/brad_neuberg.jpg" title=""
+ alt="Image of Brad Neuberg as a child"
+ style="border: 0px solid ; width: 79px; height: 155px;" hspace="4"
+ vspace="4" align="left"></a><a href="http://www.codinginparadise.org">Brad
+"GNUberg" Neuberg</a> is an open-source developer living in San
+Francisco. &nbsp;He is currently involved with the <a
+ href="http://java.mozdev.org/blackconnect">BlackConnect</a> project, an
+effort to allow programmers to write Mozilla XPCOM components in Java;
+the <a href="http://java.mozdev.org">Java-Mozilla Integration</a>
+project, an umbrella effort for open-source developers to work on
+turning Java into a full-fledged member of the Mozilla platform; the <a
+ href="http://p2psockets.jxta.org">P2P Sockets</a> project, an
+initiative to port the existing web onto a peer-to-peer foundation and
+make working with Jxta easier; the Paper Airplane project, a browser
+plugin that empowers everone to be a writer as well as a reader; and
+submissions to the <a href="http://www.jxta.org">Jxta </a>and <a
+ href="http://www.mozilla.org">Mozilla </a>projects. &nbsp;In the past
+he has worked on the OpenPortal project and the <a
+ href="http://tinker.editthispage.com/FlashJava">Flash/Java Integration</a>
+project. &nbsp;He is an avid Java, C++, JavaScript, and Mozilla Platform
+hacker who is a strong believer in usability. &nbsp;He has a B.A. in
+Computer Science from Columbia University and experience building
+enterprise trading systems for the securities industry using J2EE
+technologies. &nbsp;He is now slightly older than he was when the
+picture on the left was taken. &nbsp;Occasionally, after enough beers,
+he'll start tap dancing.<br>
+<br>
+<br>
+<br>
+<div style="text-align: center;"><small>This work is licensed under the
+Creative Commons Attribution-NonCommercial License by Bradley Keith
+Neuberg. To view a copy of this license, visit
+http://creativecommons.org/licenses/by-nc/1.0/ or send a letter to
+Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA.</small></div>
+</body>
+</html>

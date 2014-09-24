@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE jxta:CP>
+<jxta:CP type="jxta:PlatformConfig" xmlns:jxta="http://jxta.org">
+	<PID>
+		urn:jxta:uuid-59616261646162614A787461503250339C6A0A48699C4DE7A9E3F86AA108645703
+	</PID>
+	<Name>
+		clientpeer
+	</Name>
+	<Desc>
+		Created by: net.jxta.ext.config.Configurator
+	</Desc>
+	<Svc>
+		<MCID>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE0000000505
+		</MCID>
+		<Parm type="jxta:PSEConfig" xmlns:jxta="http://jxta.org">
+			<RootCert>
+				<Certificate>
+					MIICEDCCAXmgAwIBAgIBATANBgkqhkiG9w0BAQUFADBOMRUwEwYDVQQKEwx3d3cuanh0YS5vcmcx
+FjAUBgNVBAMTDWNsaWVudHBlZXItQ0ExHTAbBgNVBAsTFDEzNEQ0QTZDQjQ0M0RGRUVENUI0MB4X
+DTA1MTAyMTE0NDA0OVoXDTE1MTAyMTE0NDA0OVowTjEVMBMGA1UEChMMd3d3Lmp4dGEub3JnMRYw
+FAYDVQQDEw1jbGllbnRwZWVyLUNBMR0wGwYDVQQLExQxMzRENEE2Q0I0NDNERkVFRDVCNDCBnzAN
+BgkqhkiG9w0BAQEFAAOBjQAwgYkCgYEA4Qd6RzsDXPcNlMdDFf7edliOTc4OriEnvJzDEUbf/pB+
+n6y2Gu5qPLCk00pX3LRMEnP9P43zWEtKuoF1dA/LsV4lK3OrS28g6ZdV6LT3Mpo33P6TF0i+9BIV
+l09yuk8+eh4oTBTYhuQsFYwWaA5zQhlzWL35UnNHgh7NbGAinZMCAwEAATANBgkqhkiG9w0BAQUF
+AAOBgQC4a/KxMR9YowiQDNAPvrBLnjimTztwq7uGJsigoJv7i6ukKDDCno+wz8nf1aGQIc8WZmVk
+4lhCTZEFW7q/3ePBz4tENP5wtBgY55Nb7U0I3yubNnrt5/2FxYa92XjZGlWZaPsEWwsF6ZxrE9AN
+r6wOmQqI8c/GHj04vmEff1Jdig==
+				</Certificate>
+				<EncryptedPrivateKey algorithm="RSA">
+					MIICoTAbBgkqhkiG9w0BBQMwDgQIE6EHvILxJgACAgH0BIICgGwVN95abvLZDO8Hm4CYkWgawef3
+Q9o6Mx7NqmGBphnVQQO/dxvzdp1OZZ0TQR9YaAum45wRKDqhHAqJdQXLHSjUlW/tGXcfAiJtTOS0
+JJ9xDQQXGC/Fenjt5LWB/deK7wGfp7kHqd3MeXlLAarD9PAhpCLl1Wvpx8S+SNoOcXq87xFO5KPp
+owd477ai7HJbN4irp2gkbXbLJEfOTavvO45HfP5eNuMFf4SrCJjjBzGeQzmP84eLW2zn7yvJVbGb
+/QQ9qSgDLmQqDXs06URAqduMIddau83HrBesM2KZGED8dhfa/76ObolapGPOVt83MToIc8fKyY2Q
+yRi259eBywC9ZPNHWskcKhKvvtD+KZjlXiWdu/80e70s7z97luVBnSnWWpSyBG8lBkX1O6XweYug
+5mPjdw+xcVThuFgBfDFGuLuBkWInk3meSeRyacbhGgZRFdfOziB2bL1LbLBjul5xe3ex06h6Fd94
+Br505Pt3A4A9pGz6EL1Tw9Ss+THQ03Z25OlCY4lv4wjVwAExRWkF8LOQ3yC9tN4ykESjb2d101rr
+df42gT7kt+d3+a7Aak9nELd2E2VRWT7Mpu/Oglq2lG7MIoDsQ7U6xKcLjyCWQufUUJ0cOPUuc12m
+Jfmu1DDCvOaloMoCcC76oRBNc96MCGTR+ES5EeaNcnR8tkIrdZQJXyIVCMutHEk2nL5YfZWiyT/4
++wZjSVHYUNrFonSLFeYsOHpS4d+CYTxk9Lk16UmzWrBPegi6tbQImCA+4dexy/UKgPgEKvy9d//m
+6MqGsumwLLz4u7uh1Sm+QLnZ6v0K7iJJsi3s/3i1k0+v82eaTyGMMThMBK+0HrkEoPw=
+				</EncryptedPrivateKey>
+			</RootCert>
+		</Parm>
+	</Svc>
+	<Svc>
+		<MCID>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE0000000A05
+		</MCID>
+		<Parm>
+			<jxta:TransportAdvertisement xmlns:jxta="http://jxta.org" type="jxta:HTTPTransportAdvertisement">
+				<Protocol>
+					http
+				</Protocol>
+				<InterfaceAddress/>
+				<ConfigMode>
+					auto
+				</ConfigMode>
+				<Port>
+					9700
+				</Port>
+				<ProxyOff/>
+				<ServerOff/>
+			</jxta:TransportAdvertisement>
+		</Parm>
+	</Svc>
+	<Svc>
+		<MCID>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE0000000E05
+		</MCID>
+		<Parm>
+			<isOff/>
+		</Parm>
+	</Svc>
+	<Svc>
+		<MCID>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE0000000605
+		</MCID>
+		<Parm type="jxta:RdvConfig" config="client" xmlns:jxta="http://jxta.org">
+			<seeds>
+				<addr>
+					tcp://192.18.37.36:9701
+				</addr>
+				<addr>
+					tcp://209.25.154.232:9701
+				</addr>
+				<addr>
+					tcp://192.18.37.37:9701
+				</addr>
+				<addr>
+					http://192.18.49.131:9700
+				</addr>
+				<addr>
+					http://192.18.37.36:9700
+				</addr>
+				<addr>
+					http://63.98.225.218:9700
+				</addr>
+				<addr>
+					http://209.25.154.236:9700
+				</addr>
+				<addr>
+					http://192.18.37.37:9700
+				</addr>
+				<addr>
+					tcp://209.25.154.236:9701
+				</addr>
+				<addr>
+					http://192.18.37.38:9700
+				</addr>
+				<addr>
+					tcp://63.98.225.218:9701
+				</addr>
+				<addr>
+					tcp://192.18.49.131:9701
+				</addr>
+				<addr>
+					tcp://192.18.37.38:9701
+				</addr>
+				<addr>
+					http://209.25.154.232:9700
+				</addr>
+			</seeds>
+		</Parm>
+	</Svc>
+	<Svc>
+		<MCID>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE0000000F05
+		</MCID>
+		<Parm type="jxta:RelayConfig" client="true" xmlns:jxta="http://jxta.org">
+			<client maxLease="7200000" maxRelays="1">
+				<seeds>
+					<addr>
+						tcp://209.128.126.120:9701
+					</addr>
+					<addr>
+						tcp://209.128.126.123:9701
+					</addr>
+					<addr>
+						http://209.128.126.123:9700
+					</addr>
+					<addr>
+						http://209.128.126.123:9710
+					</addr>
+					<addr>
+						tcp://209.128.126.123:9711
+					</addr>
+					<addr>
+						tcp://209.128.126.120:9711
+					</addr>
+					<addr>
+						http://209.128.126.120:9700
+					</addr>
+					<addr>
+						http://209.128.126.120:9710
+					</addr>
+				</seeds>
+			</client>
+			<server leaseDuration="7200000" clientQueue="20" maxClients="100"/>
+		</Parm>
+	</Svc>
+	<Svc>
+		<MCID>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE0000000905
+		</MCID>
+		<Parm>
+			<jxta:TransportAdvertisement xmlns:jxta="http://jxta.org" type="jxta:TCPTransportAdvertisement">
+				<Protocol>
+					tcp
+				</Protocol>
+				<ConfigMode>
+					auto
+				</ConfigMode>
+				<Port start="0" end="0">
+					0
+				</Port>
+				<MulticastAddr>
+					224.0.1.85
+				</MulticastAddr>
+				<MulticastPort>
+					1234
+				</MulticastPort>
+				<MulticastSize>
+					16384
+				</MulticastSize>
+			</jxta:TransportAdvertisement>
+		</Parm>
+	</Svc>
+	<Svc>
+		<MCID>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE0000000805
+		</MCID>
+		<Parm>
+			<MessengerQueueSize>
+				20
+			</MessengerQueueSize>
+		</Parm>
+	</Svc>
+</jxta:CP>

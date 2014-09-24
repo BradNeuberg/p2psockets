@@ -1,0 +1,175 @@
+<?xml version="1.0"?>
+<project name="P2PSockets-common" default="all" basedir=".">
+
+  <!-- ==================================================================== -->
+  <!-- This file stores JAR information in an external file, so that apps   -->
+  <!-- that use P2P Sockets, such as Paper Airplane, can import this file   -->
+  <!-- without having to encode all the JAR files needed.					-->
+  <!-- ==================================================================== -->
+
+  <!-- ==================================================================== -->
+  <!-- Note: You must define "env" and "p2psockets_home" before including   -->
+  <!-- this common ANT file.												-->
+  <!-- ==================================================================== -->
+
+	<property name="p2psockets.dist.dir"         	   value="${p2psockets_home}/dist"/>
+	<property name="p2psockets.dist.classes"           value="${p2psockets.dist.dir}/classes"/>
+	<property name="p2psockets.dist.lib"	           value="${p2psockets.dist.dir}/lib"/>
+	<property name="p2psockets.dist.tests"         	   value="${p2psockets.dist.dir}/tests"/>
+	<property name="p2psockets.dist.examples"          value="${p2psockets.dist.dir}/examples"/>
+	
+	<property name="p2psockets.docs.dir"         	   value="${p2psockets_home}/www/docs"/>
+	<property name="p2psockets.docs.javadoc"           value="${p2psockets.docs.dir}/javadoc"/>		
+	
+	<property name="p2psockets.src.dir"         	   value="${p2psockets_home}/src"/>
+	<property name="p2psockets.src.lib"				   value="${p2psockets_home}/lib"/>
+	<property name="p2psockets.src.java"         	   value="${p2psockets.src.dir}/java"/>
+	<property name="p2psockets.src.examples"      	   value="${p2psockets.src.dir}/examples"/>
+	<property name="p2psockets.src.tests"      		   value="${p2psockets.src.dir}/tests"/>
+
+	<property name="p2psockets.www.dir"				   value="${p2psockets_home}/www"/>
+
+	<property name="p2psockets.releases"			   value="${p2psockets.www.dir}/releases"/>
+	<property name="p2psockets.releases.stable"        value="${p2psockets.releases}/stable"/>
+	<property name="p2psockets.releases.unstable"      value="${p2psockets.releases}/unstable"/>
+	
+	<property name="p2psockets-core.jar"     		   value="${p2psockets.dist.lib}/p2psockets-core.jar"/>
+	<property name="p2psockets-jetty.jar"   		   value="${p2psockets.dist.lib}/p2psockets-jetty.jar"/>
+	<property name="p2psockets-apache-httpclient.jar"  value="${p2psockets.dist.lib}/p2psockets-apache-httpclient.jar"/>
+	<property name="p2psockets-scache.jar"     		   value="${p2psockets.dist.lib}/p2psockets-scache.jar"/>
+	<property name="p2psockets-apache-xmlrpc.jar" 	   value="${p2psockets.dist.lib}/p2psockets-apache-xmlrpc.jar"/>
+	<property name="p2psockets-tests.jar"     		   value="${p2psockets.dist.lib}/p2psockets-tests.jar"/>
+	<property name="p2psockets-examples.jar"     	   value="${p2psockets.dist.lib}/p2psockets-examples.jar"/>
+	
+	<property name="p2psockets.lib.dir"         	   value="${p2psockets_home}/lib"/>	
+	
+  <!-- core-libs jar names properties -->
+  
+  	<property name="ant-contrib.jar"        		   value="${p2psockets.lib.dir}/ant-contrib-0.6.jar"/>  
+  	<property name="cryptix-asn1.jar"        		   value="${p2psockets.lib.dir}/cryptix-asn1.jar"/>
+  	<property name="cryptix32.jar"             		   value="${p2psockets.lib.dir}/cryptix32.jar"/>
+	<property name="bcprov-jdk14.jar"				   value="${p2psockets.lib.dir}/bcprov-jdk14.jar"/>
+        <property name="jsp-api.jar"                               value="${p2psockets.lib.dir}/jsp-api.jar"/>
+        <property name="servlet-api.jar"                           value="${p2psockets.lib.dir}/servlet-api.jar"/>	
+        <property name="jaxen-core.jar"					   value="${p2psockets.lib.dir}/jaxen-core.jar"/>
+	<property name="jaxen-jdom.jar"					   value="${p2psockets.lib.dir}/jaxen-jdom.jar"/>
+	<property name="jdom.jar"					       value="${p2psockets.lib.dir}/jdom.jar"/>
+  	<property name="jsse.jar"                		   value="${p2psockets.lib.dir}/jsse.jar"/>
+  	<property name="jxta.jar"                		   value="${p2psockets.lib.dir}/jxta.jar"/>
+	<property name="jxtaext.jar"                	   value="${p2psockets.lib.dir}/jxtaext.jar"/>
+  	<property name="jxtaptls.jar"            		   value="${p2psockets.lib.dir}/jxtaptls.jar"/>
+  	<property name="jxtasecurity.jar"        		   value="${p2psockets.lib.dir}/jxtasecurity.jar"/>
+  	<property name="jxtashell.jar"           		   value="${p2psockets.lib.dir}/jxtashell.jar"/>
+  	<property name="log4j.jar"               		   value="${p2psockets.lib.dir}/log4j.jar"/>
+  	<property name="org.mortbay.jetty.jar"   		   value="${p2psockets.lib.dir}/org.mortbay.jetty.jar"/> 
+	<property name="saxpath.jar"					   value="${p2psockets.lib.dir}/saxpath.jar"/> 	  	  	  	  	  	  	  	
+  	<property name="jxl.jxta.jar"					   value="${p2psockets.lib.dir}/jxl.jxta.jar"/> 	  	  	  	  	  	  	  	
+  <!-- ext-libs jar names properties -->  	
+  
+  	<property name="ant.jar" 			     		   value="${p2psockets.lib.dir}/ant.jar"/>
+  	<property name="apache-xmlrpc.jar"       		   value="${p2psockets.lib.dir}/apache-xmlrpc.jar"/>
+  	<property name="commons-logging.jar"     		   value="${p2psockets.lib.dir}/commons-logging.jar"/> 
+  	<property name="httpclient.jar" 				   value="${p2psockets.lib.dir}/commons-httpclient.jar"/> 
+  	<property name="jasper-compiler.jar" 	 		   value="${p2psockets.lib.dir}/jasper-compiler.jar"/> 
+  	<property name="jasper-runtime.jar" 	 		   value="${p2psockets.lib.dir}/jasper-runtime.jar"/>
+  	<property name="jcert.jar"          	 		   value="${p2psockets.lib.dir}/jcert.jar"/>
+  	<property name="jmxri.jar"          	 		   value="${p2psockets.lib.dir}/jmxri.jar"/>
+  	<property name="jmxtools.jar"        	 		   value="${p2psockets.lib.dir}/jmxtools.jar"/>
+  	<property name="jnet.jar"           	 		   value="${p2psockets.lib.dir}/jnet.jar"/>
+  	<property name="xercesImpl.jar"        	 		   value="${p2psockets.lib.dir}/xercesImpl.jar"/> 
+  	<property name="xml-apis.jar"          	 		   value="${p2psockets.lib.dir}/xml-apis.jar"/> 
+  	<property name="xmlParserAPIs.jar"       		   value="${p2psockets.lib.dir}/xmlParserAPIs.jar"/>
+
+  <!-- ant extension jar names properties -->
+
+	<property name="p2psockets-ant-custom.jar"		   value="${p2psockets.lib.dir}/p2psockets-ant-custom.jar"/>
+
+  <!-- ==================================================================== -->
+  <!-- Paths                                                                -->
+  <!-- ==================================================================== -->
+  
+  	<path id="p2psockets.build-classpath">
+		<!-- dirs -->
+    	<pathelement location="${p2psockets.dist.classes}"/>
+    	<pathelement location="${p2psockets.dist.tests}"/>
+    	<pathelement location="${p2psockets.dist.examples}"/>
+    	<pathelement location="${p2psockets.src.java}"/>
+    	<pathelement location="${p2psockets.src.tests}"/>
+    	<pathelement location="${p2psockets.src.examples}"/>
+  		<!-- core-libs -->
+		<pathelement location="${bcprov-jdk14.jar}"/>
+    	<pathelement location="${cryptix-asn1.jar}"/>
+    	<pathelement location="${cryptix32.jar}"/>
+        <pathelement location="${jxl.jxta.jar}"/>
+    	<pathelement location="${log4j.jar}"/>
+	<pathelement location="${jsp-api.jar}"/>
+	<pathelement location="${servlet-api.jar}"/>
+		<pathelement location="${jaxen-core.jar}"/>
+	    <pathelement location="${jaxen-jdom.jar}"/>
+		<pathelement location="${jdom.jar}"/>
+    	<pathelement location="${jsse.jar}"/>
+    	<pathelement location="${jxta.jar}"/>
+		<pathelement location="${jxtaext.jar}"/>
+    	<pathelement location="${jxtaptls.jar}"/>
+    	<pathelement location="${jxtasecurity.jar}"/>
+    	<pathelement location="${jxtashell.jar}"/>
+		<pathelement location="${jxtaSwing.jar}"/>
+    	<pathelement location="${jxtashell.jar}"/>
+    	<pathelement location="${org.mortbay.jetty.jar}"/>
+		<pathelement location="${saxpath.jar}"/>
+    	<!-- ext-libs -->
+    	<pathelement location="${commons-logging.jar}"/>
+    	<pathelement location="${httpclient.jar}"/>
+    	<pathelement location="${jasper-compiler.jar}"/>
+    	<pathelement location="${jasper-runtime.jar}"/>
+    	<pathelement location="${jcert.jar}"/>
+    	<pathelement location="${jmxri.jar}"/>
+    	<pathelement location="${jmxtools.jar}"/>
+    	<pathelement location="${jnet.jar}"/>
+    	<pathelement location="${xercesImpl.jar}"/>
+    	<pathelement location="${xml-apis.jar}"/>
+    	<pathelement location="${xmlParserAPIs.jar}"/>
+    	<pathelement location="${apache-xmlrpc.jar}"/>
+		<!-- ant and ant extension libs -->
+		<pathelement location="${ant.jar}"/>
+		<pathelement location="${ant-contrib.jar}"/>
+  	</path>  	
+  	
+  	<path id="p2psockets.run-classpath">
+  		<pathelement location="${p2psockets-core.jar}"/>
+		<pathelement location="${p2psockets-jetty.jar}"/>
+		<pathelement location="${p2psockets-apache-httpclient.jar}"/>
+		<pathelement location="${p2psockets-scache.jar}"/>
+		<pathelement location="${p2psockets-apache-xmlrpc.jar}"/>
+		<pathelement location="${p2psockets-tests.jar}"/>
+		<pathelement location="${p2psockets-examples.jar}"/>
+		<path refid="p2psockets.build-classpath"/>
+	</path>		
+				
+	<!-- ant-contrib tasks path http://ant-contrib.sourceforge.net -->
+        
+	<taskdef resource="net/sf/antcontrib/antcontrib.properties">
+		<classpath>
+			<pathelement location="${ant-contrib.jar}"/>
+		</classpath>
+	</taskdef>
+
+	<!-- Our custom ant tasks, such as the Release tag. 
+		 build_custom_ant.xml has troubles if this is defined for it,
+		 since that XML file also includes this file.  To get
+		 around this we have a new property, called "exclude-custom-ant-tasks",
+		 which if true means we don't include this section. -->
+	<if>
+	    <equals arg1="${exclude-custom-ant-tasks}" arg2="true" />
+	    <then>	
+	    </then>
+		<else>
+			 <taskdef resource="net/sf/antcontrib/p2psockets/antcontrib.properties">
+		     <classpath>
+			    <pathelement location="${p2psockets-ant-custom.jar}"/>
+		     </classpath>
+	      </taskdef>
+		</else>
+	</if>	
+
+</project>		

@@ -1,0 +1,39 @@
+<?xml version="1.0"  encoding="UTF-8"?>
+<!DOCTYPE Configure PUBLIC "-//Mort Bay Consulting//DTD Configure 1.2//EN" "http://jetty.mortbay.org/configure_1_2.dtd">
+
+<!-- =============================================================== -->
+<!-- Configure the Jetty Server                                      -->
+<!-- =============================================================== -->
+<Configure class="org.mortbay.p2psockets.jetty.Server">
+
+  <!-- =============================================================== -->
+  <!-- Configure the Contexts                                          -->
+  <!-- =============================================================== -->
+
+
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+  <!-- Add root context web applications.                              -->
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+  <Call name="addWebApplication">
+    <Arg>/</Arg>
+    <Arg><SystemProperty name="p2psockets_home" default="."/>/webapps/root</Arg>
+  </Call>
+
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+  <!-- Add jetty demo web applications.                                -->
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+  <Call name="addWebApplication">
+    <Arg>/jetty/*</Arg>
+    <Arg><SystemProperty name="p2psockets_home" default="."/>/webapps/jetty</Arg>
+  </Call>
+
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+  <!-- Add tomcat examples web applications.                           -->
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+  <Call name="addWebApplication">
+    <Arg>/examples/*</Arg>
+    <Arg><SystemProperty name="p2psockets_home" default="."/>/webapps/examples</Arg>
+  </Call>
+
+</Configure>
+

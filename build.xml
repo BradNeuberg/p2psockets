@@ -1,0 +1,548 @@
+<?xml version="1.0"?>
+<project name="P2PSockets" default="all" basedir=".">
+
+  <!-- ==================================================================== -->
+  <!-- This build file was written to handle path separation issues that
+  	   come up when attempting to maintain build process cross-platform 
+  	   compatibility. While ANT is great at executing a -classpath on it's 
+  	   own, in order to run via -Xbootclasspath/a: you must first convert to
+  	   the correct classpath (; or ;) manually. In this file we took advantage
+  	   of the Ant-Contrib project's 'osfamily' task and then used the native
+  	   pathconvert to convert to the correct type of classpath for any given
+  	   OS. This way we avoid runscript redundancies when building and testing
+  	   on mulitple platforms.
+  	   
+  	   				Questions or comments: bkn3@columbia.edu				-->
+  <!-- ==================================================================== -->
+
+  <!-- ==================================================================== -->
+  <!-- build.xml from Kevin Lahoda's 12-03-2003 version.                    -->
+  <!-- Updated to not need the bootclasspath set, bkn3@columbia.edu			-->
+  <!-- Updated to store common properties and tasks in a seperate include   -->
+  <!-- file, so that apps that use P2P Sockets, such as Paper Airplane, can -->
+  <!-- import this file without having to encode all the JAR files needed.	-->
+  <!-- ==================================================================== -->
+  
+  <!-- ==================================================================== -->
+  <!-- set properties for this build                                        -->
+  <!-- ==================================================================== -->
+  
+	<property environment="env"/>
+
+	
+	<condition property="p2psockets_home"	value="${env.p2psockets_home}">
+          <isset property="env.p2psockets_home"/>
+        </condition>
+        <condition property="p2psockets_home" value="${basedir}">
+            <not>
+                <isset property="env.p2psockets_home"/>
+            </not>
+        </condition>
+
+	<property file="${p2psockets_home}/build.properties"/>
+
+	<import file="build_common.xml"/>
+	
+	<property name="jetty-home"            		       value="${p2psockets_home}/webapps"/>
+	
+	<property name="jxta-username" 				       value="BradNeuberg"/>
+	
+  <!-- ==================================================================== -->
+  <!-- Init the build process	                                            -->
+  <!-- ==================================================================== -->
+  
+  	<target name="osfam">
+  		<osfamily property="os.family"/>
+  			<echo message="${os.family}"/>
+  	</target>	  
+	
+	<target name="init"
+			description="Initializes everything needed for the build and distribution processes">
+		<mkdir dir="${p2psockets.dist.dir}"/>
+		<mkdir dir="${p2psockets.dist.classes}"/>
+		<mkdir dir="${p2psockets.dist.tests}"/>
+		<mkdir dir="${p2psockets.dist.examples}"/>
+		<mkdir dir="${p2psockets.dist.lib}"/>
+	</target>
+	
+  <!-- ==================================================================== -->
+  <!-- Build Targets        	                                            -->
+  <!-- ==================================================================== -->	
+
+	<target name="build-src"
+			description="Compile Java source files in the directory src/java">
+		<javac	srcdir="${p2psockets.src.java}"
+				destdir="${p2psockets.dist.classes}"
+				debug="on"
+				deprecation="true"
+                                source="1.4">
+				<classpath refid="p2psockets.build-classpath"/> 
+		</javac>
+	</target>
+
+	<target name="build-tests"
+			description="Compiles the tests">
+		<javac	srcdir="${p2psockets.src.tests}"
+				destdir="${p2psockets.dist.tests}"
+				debug="on"
+				deprecation="off"
+                                source="1.4">
+				<classpath refid="p2psockets.build-classpath"/> 
+		</javac>		
+	</target>
+
+	<target name="build-examples"
+			description="Compile the examples">
+		<javac	srcdir="${p2psockets.src.examples}"
+				destdir="${p2psockets.dist.examples}"
+				debug="on"
+				deprecation="off"
+                                source="1.4">
+				<classpath refid="p2psockets.build-classpath"/> 
+		</javac>		
+	</target>
+
+	<target name="build" depends="init,build-src,build-tests,build-examples"
+			description="Compile Java source files">
+	</target>
+
+        
+	<target name="core-jar" depends="build"
+			description="Build core jar file without extensions">
+                        <copy file="${p2psockets.src.java}/p2ps.logging.properties" todir="${p2psockets.dist.classes}"/>
+		<jar	jarfile="${p2psockets-core.jar}"
+				basedir="${p2psockets.dist.classes}"
+				includes="org/p2psockets/**,org/p2psockets/j2p/**,net/jxta/socket/**,jxl/jxta/**,p2ps.logging.properties"/>
+	</target>
+
+	<target name="jetty-ext-jar" depends="build"
+			description="Build the extensions necessary for Jetty to work with P2P Sockets">
+		<jar	jarfile="${p2psockets-jetty.jar}"
+				basedir="${p2psockets.dist.classes}"
+				includes="org/mortbay/**"/>
+	</target>
+
+	<target name="httpclient-ext-jar" depends="build"
+			description="Build the extensions necessary for the Apache HTTP-Client library to work with P2P Sockets">
+		<jar	jarfile="${p2psockets-apache-httpclient.jar}"
+				basedir="${p2psockets.dist.classes}"
+				includes="org/apache/commons/httpclient/**"/>
+	</target>
+
+	<target name="scache-ext-jar" depends="build"
+			description="Build the extensions necessary for the Smart Cache/Proxy to work with P2P Sockets">
+		<jar	jarfile="${p2psockets-scache.jar}"
+				basedir="${p2psockets.dist.classes}"
+				includes="org/scache/**"/>
+	</target>
+
+	<target name="apache-xmlrpc-ext-jar" depends="build"
+			description="Build the extensions necessary for the Apache XML-RPC Client/Server library to support P2P Sockets">
+		<jar	jarfile="${p2psockets-apache-xmlrpc.jar}"
+				basedir="${p2psockets.dist.classes}"
+				includes="org/apache/xmlrpc/**"/>
+	</target>		
+
+	<target name="ext-jar" depends="jetty-ext-jar,httpclient-ext-jar,scache-ext-jar,apache-xmlrpc-ext-jar"
+			description="Builds the JAR files for P2P Socket extensions">
+	</target>
+
+	<target name="tests-jar" depends="build"
+			description="Builds the JAR file that holds all of the testing classes for both the core and extensions">
+		<jar	jarfile="${p2psockets-tests.jar}"
+				basedir="${p2psockets.dist.tests}"
+				includes="**"/>
+	</target>
+
+	<target name="examples-jar" depends="build"
+			description="Builds the JAR file that holds all of the example classes for both the core and extensions">
+		<jar	jarfile="${p2psockets-examples.jar}"
+				basedir="${p2psockets.dist.examples}"
+				includes="**"/>
+	</target>
+
+	<target name="jar" depends="core-jar,ext-jar,tests-jar,examples-jar"
+			description="Builds both the core and extension JARs for P2P Sockets">
+	</target>
+
+	<target name="javadoc" depends="build"
+			description="Generates JavaDoc for P2P Sockets and Extensions">
+		<!--<delete dir="${p2psockets.docs.javadoc}"/> DO NOT DELETE THE DIR-->
+		<mkdir dir="${p2psockets.docs.javadoc}"/>
+		<javadoc sourcepath="${p2psockets.src.java}" destdir="${p2psockets.docs.javadoc}"
+				 packagenames="*" author="true"
+				 excludepackagenames="gnu.rex.*"
+				 version="true" windowtitle="P2P Sockets, Extensions API, and Custom Ant Tasks">
+				 <classpath refid="p2psockets.build-classpath"/>
+		</javadoc>		 
+	</target>
+
+	<target name="distributable" depends="build,jar,javadoc"
+			description="Creates an archive ready to post to the P2P Socket's website">
+		<delete file="distributable.zip"/>
+		<delete dir="test/clientpeer/.jxta"/>
+		<delete dir="test/serverpeer/.jxta"/>
+		<delete dir="store"/>
+		<zip zipfile="distributable.zip" 
+			 basedir=".." excludes="p2psockets/www/releases/**" includes="p2psockets/**"/>
+                <echo message="P2PSocket home dir is ${p2psockets_home}"/>
+		<release destdir="${p2psockets.www.dir}" name="p2psockets"
+                 origfile="${p2psockets_home}/distributable.zip" ending=".zip"
+				 home="${p2psockets_home}"/>
+		<if>
+		 <equals arg1="${upload}" arg2="true" />
+		 <then>
+		   <cvs command="add -kb ${distributable-cvs-filename}"/>
+		   <cvs command="commit -m 'New distributable' ${distributable-cvs-filename}"/>
+		 </then>
+		</if>	
+	</target>  	
+	
+  <!-- ==================================================================== -->
+  <!-- Clobber                                                  		    -->
+  <!-- ==================================================================== -->		
+
+	<target name="clobber"
+			description="Deletes old builds">
+		<delete dir="${p2psockets.dist.dir}"/>
+	</target>
+	
+  <!-- ==================================================================== -->
+  <!-- Do it All                                                		    -->
+  <!-- ==================================================================== -->		
+
+	<target name="all" depends="clobber,build,jar,javadoc,distributable"/>
+	
+  <!-- ==================================================================== -->
+  <!-- Test Core Server                                          		    -->
+  <!-- ==================================================================== -->	
+	
+	<target name="test-core-server"
+			description="Runs the server portion of the test harness for P2P Sockets" 
+			depends="osfam,jar">
+		<pathconvert targetos="${os.family}" property="run-path" refid="p2psockets.run-classpath"/>	
+		<java fork="true" classname="test.org.p2psockets.TestPackage"
+			  classpath="${run-path}">
+			<jvmarg value="-DJXTA_HOME=${p2psockets_home}/test/serverpeer/.jxta"/>
+			<arg value="--server"/>
+		</java>
+	</target>	
+	
+  <!-- ==================================================================== -->
+  <!-- Test Core Client                                          		    -->
+  <!-- ==================================================================== -->		
+
+	<target name="test-core-client"
+			description="Runs the client portion of the test harness for P2P Sockets" 
+			depends="osfam,jar">
+	<pathconvert targetos="${os.family}" property="run-path" refid="p2psockets.run-classpath"/>
+		<java fork="true" classname="test.org.p2psockets.TestPackage"
+			  classpath="${run-path}">
+			<jvmarg value="-DJXTA_HOME=${p2psockets_home}/test/clientpeer/.jxta"/>
+			<arg value="--client"/>
+		</java>
+	</target>
+
+
+  <!-- ==================================================================== -->
+  <!-- Test Jetty                                           		    	-->
+  <!-- ==================================================================== -->	
+
+	<target name="test-jetty"
+			description="Runs the test harness for the Jetty Extension" 
+			depends="osfam,jar">
+	<pathconvert targetos="${os.family}" property="run-path" refid="p2psockets.run-classpath"/>
+		<java classname="test.org.mortbay.p2psockets.TestWebServer"
+			  fork="yes" classpath="${run-path}">
+			<arg value="serverpeer"/>
+			<arg value="serverpeerpassword"/>
+			<arg value="www.nike.laborpolicy"/>			  
+			<jvmarg value="-DJXTA_HOME=${p2psockets_home}/test/serverpeer/.jxta"/>
+			<jvmarg value="-DJETTY_HOME=${jetty-home}"/>			
+			<jvmarg value="-Dp2psockets.network=TestNetwork"/>
+		</java>
+	</target>		
+  
+  <!-- ==================================================================== -->
+  <!-- Plain old Shell                                           			-->
+  <!-- ==================================================================== -->	
+  
+	<target name="plain-shell"
+			description="Runs the Jxta Shell" depends="osfam">
+	<pathconvert targetos="${os.family}" property="run-path" refid="p2psockets.run-classpath"/>
+		<java dir="test/plain" fork="true" classname="net.jxta.impl.peergroup.Boot"
+			  classpath="${run-path}">
+			<jvmarg value="-DJXTA_HOME=${p2psockets_home}/test/plain/.jxta"/>
+		</java>
+  	</target>
+  	
+  <!-- ==================================================================== -->
+  <!-- Plain old Shell B                                          			-->
+  <!-- ==================================================================== -->	
+  
+	<target name="plainb-shell"
+			description="Runs the Jxta Shell" depends="osfam">
+	<pathconvert targetos="${os.family}" property="run-path" refid="p2psockets.run-classpath"/>
+		<java dir="test/plainb" fork="true" classname="net.jxta.impl.peergroup.Boot"
+			  classpath="${run-path}">
+			<jvmarg value="-DJXTA_HOME=${p2psockets_home}/test/plainb/.jxta"/>
+		</java>
+  	</target> 	
+
+
+  <!-- ==================================================================== -->
+  <!-- Test Server Shell                                           			-->
+  <!-- ==================================================================== -->	
+  
+	<target name="testserver-shell"
+			description="Runs the Jxta Shell for the core test server" depends="osfam">
+	<pathconvert targetos="${os.family}" property="run-path" refid="p2psockets.run-classpath"/>
+		<java dir="test/serverpeer" fork="true" classname="net.jxta.impl.peergroup.Boot"
+			  classpath="${run-path}">
+			<jvmarg value="-DJXTA_HOME=${p2psockets_home}/test/serverpeer/.jxta"/>
+		</java>
+  	</target>
+
+  <!-- ==================================================================== -->
+  <!-- Test Client Shell                                           			-->
+  <!-- ==================================================================== -->	
+  
+	<target name="testclient-shell"
+			description="Runs the Jxta Shell for the core test client" depends="osfam">
+	<pathconvert targetos="${os.family}" property="run-path" refid="p2psockets.run-classpath"/>
+		<java dir="test/clientpeer" fork="true" classname="net.jxta.impl.peergroup.Boot"
+			  classpath="${run-path}">
+			<jvmarg value="-DJXTA_HOME=${p2psockets_home}/test/clientpeer/.jxta"/>
+		</java>
+  	</target>
+	
+  <!-- ==================================================================== -->
+  <!-- Example Server Socket Run                                            -->
+  <!-- ==================================================================== -->	
+  
+	<target name="example-serversocket-run"
+			description="Runs the example P2P Server Socket" depends="osfam,jar">
+		<pathconvert targetos="${os.family}" property="run-path" refid="p2psockets.run-classpath"/>	
+		<java classname="ExampleServerSocket"
+			  fork="yes" classpath="${run-path}">
+			<jvmarg value="-DJXTA_HOME=${p2psockets_home}/test/serverpeer/.jxta"/>
+		</java>
+	</target>
+	
+  <!-- ==================================================================== -->
+  <!-- Example Client Socket Run                                            -->
+  <!-- ==================================================================== -->	 
+  
+	<target name="example-clientsocket-run"
+			description="Runs the example P2P Client Socket" depends="osfam,jar">
+		<pathconvert targetos="${os.family}" property="run-path" refid="p2psockets.run-classpath"/>	
+		<java classname="ExampleClientSocket"
+			  fork="yes" classpath="${run-path}">
+			<jvmarg value="-DJXTA_HOME=${p2psockets_home}/test/clientpeer/.jxta"/>
+		</java>
+	</target>
+	
+  <!-- ==================================================================== -->
+  <!-- Example P2P Web Server Run                                           -->
+  <!-- ==================================================================== -->	 
+  
+	<target name="example-webserver-run"
+			description="Runs the example P2P Web Server" depends="osfam,jar">
+		<pathconvert targetos="${os.family}" property="run-path" refid="p2psockets.run-classpath"/>	
+		<java classname="ExampleP2PWebServer"
+			  fork="yes" classpath="${run-path}">
+			<jvmarg value="-DJXTA_HOME=${p2psockets_home}/test/serverpeer/.jxta"/>
+			<jvmarg value="-Dp2psockets_home=${p2psockets_home}"/>
+		</java>
+	</target>
+
+  <!-- ==================================================================== -->
+  <!-- Example P2P Web Client Run                                           -->
+  <!-- ==================================================================== -->	 
+  
+	<target name="example-webclient-run"
+			description="Runs the example P2P Web Client" depends="osfam,jar">
+		<pathconvert targetos="${os.family}" property="run-path" refid="p2psockets.run-classpath"/>	
+		<java classname="ExampleP2PHttpClient"
+			  fork="yes" classpath="${run-path}">
+			<jvmarg value="-DJXTA_HOME=${p2psockets_home}/test/clientpeer/.jxta"/>
+			<jvmarg value="-Durl=p2phttp://www.boobah.cat:80/"/>
+		</java>
+	</target>
+	
+  <!-- ==================================================================== -->
+  <!-- Start up a JSPWiki instance                                          -->
+  <!-- ==================================================================== -->	 
+  
+	<target name="jspwiki-run"
+			description="Starts up a JSPWiki instance" depends="osfam,jar">
+		<pathconvert targetos="${os.family}" property="run-path" refid="p2psockets.run-classpath"/>	
+		<java classname="ExampleP2PWebServer"
+			  fork="yes" classpath="${run-path}">
+			<jvmarg value="-DJXTA_HOME=${p2psockets_home}/test/serverpeer/.jxta"/>
+			<jvmarg value="-Dp2psockets_home=${p2psockets_home}"/>
+			<jvmarg value="-Dhost=${--host}"/>
+			<jvmarg value="-Dnetwork=${--network}"/>
+			<jvmarg value="-Dport=${--port}"/>
+		</java>
+	</target>	
+	
+  <!-- ==================================================================== -->
+  <!-- Start up a P2P Web Server                                            -->
+  <!-- ==================================================================== -->	  	
+	
+	<target name="webserver-run"
+			description="Starts up a P2P Web Server instance" depends="osfam,jar">
+		<pathconvert targetos="${os.family}" property="run-path" refid="p2psockets.run-classpath"/>	
+		<java classname="ExampleP2PWebServer"
+			  fork="yes" classpath="${run-path}">
+			<jvmarg value="-DJXTA_HOME=${p2psockets_home}/test/serverpeer/.jxta"/>
+			<jvmarg value="-Dp2psockets_home=${p2psockets_home}"/>
+			<jvmarg value="-Dhost=${--host}"/>
+			<jvmarg value="-Dnetwork=${--network}"/>
+			<jvmarg value="-Dport=${--port}"/>
+		</java>
+	</target>	
+
+  <!-- ==================================================================== -->
+  <!-- Testing HTTP Client		                                            -->
+  <!-- ==================================================================== -->	
+		
+	<target name="httpclient-run"
+			description="Runs the HTTP Client" depends="osfam,jar">
+		<pathconvert targetos="${os.family}" property="run-path" refid="p2psockets.run-classpath"/>	
+		<java classname="test.org.apache.commons.httpclient.P2PHttpClient"
+			  fork="yes" classpath="${run-path}">
+			 <jvmarg value="-Dorg.apache.commons.logging.LogFactory=org.apache.commons.logging.impl.LogFactoryImpl"/>			 
+			 <arg value="${--network}"/>
+      		 <arg value="${--url}"/>
+		</java>
+	</target>
+
+  <!-- ==================================================================== -->
+  <!-- Start P2P Proxy														-->
+  <!-- ==================================================================== -->  
+		
+	<target name="p2pproxy-run"
+			description="Runs the P2P Proxy" depends="osfam,jar">
+		<pathconvert targetos="${os.family}" property="run-path" refid="p2psockets.run-classpath"/>	
+		<java classname="org.scache.P2PToWebProxy"
+			  fork="yes" classpath="${run-path}">
+			 <jvmarg value="-DJXTA_HOME=${p2psockets_home}/test/clientpeer/.jxta"/>
+			 <arg line="--port"/>			 
+			 <arg value="${--port}"/>
+			 <arg line="--network"/>
+			 <arg value="${--network}"/>
+			 <arg line="--userName"/>
+      		 <arg value="${--userName}"/>
+      		 <arg line="--password"/>
+      		 <arg value="${--password}"/>
+      		 <arg line="--info"/>
+      		 <arg value="${--info}"/>
+      		 <arg line="--defaultuser"/>
+      		 <arg value="${--defaultuser}"/>
+		</java>
+	</target> 	
+
+  <!-- ==================================================================== -->
+  <!-- Help                                                                 -->
+  <!-- ==================================================================== -->
+  
+  <target name="help">
+    <echo message="U S A G E :"/>
+    <echo message="[clobber]"/>
+	<echo message="Delete old builds"/>
+	<echo message=""/>
+
+    <echo message="[build]"/>
+	<echo message="Compile Java Source Files"/>
+	<echo message=""/>
+
+    <echo message="[jar]"/>
+	<echo message="Builds both the core and extension JARs for P2P Sockets"/>
+	<echo message=""/>
+
+	<echo message="[distributable]"/>
+	<echo message="Creates a source distributable of this project suitable"/>
+	<echo message="for users to download.  You must define the properties"/>
+	<echo message="'release', 'datestamp', and 'upload' in the file "/>
+	<echo message="'build.properties' for this to work property.  See the"/>
+	<echo message="example build.properties in this directory for"/>
+	<echo message="details and information"/>
+	<echo message=""/>
+
+    <echo message="[all]"/>
+	<echo message="Do it All: clobber,build,jar,javadoc,distributable"/>
+	<echo message=""/>
+
+    <echo message="[example-clientsocket-run]"/>
+	<echo message="Runs the example P2P Client Socket"/>
+	<echo message=""/>
+
+    <echo message="[example-serversocket-run]"/>
+	<echo message="Runs the example P2P Server Socket"/>
+	<echo message=""/>
+
+	<echo message="[example-webserver-run]"/>
+	<echo message="Runs the example P2P Web Server"/>
+	<echo message=""/>
+
+	<echo message="[example-webclient-run]"/>
+	<echo message="Runs the example P2P Web Client"/>
+	<echo message=""/>
+
+    <echo message="[testclient-shell]"/>
+	<echo message="Runs the Jxta Shell for the core test client"/>
+	<echo message=""/>
+
+    <echo message="[testserver-shell]"/>
+	<echo message="Runs the Jxta Shell for the core test server"/>
+	<echo message=""/>
+
+    <echo message="[test-jetty]"/>
+	<echo message="Runs the test harness for the Jetty Extension"/>
+	<echo message=""/>
+
+    <echo message="[jetty-run]"/>
+	<echo message="Runs Jetty P2P server"/>
+	<echo message=""/>
+
+    <echo message="[test-core-server]"/>
+	<echo message="Runs the server portion of the test harness for P2P Sockets"/>
+	<echo message=""/>
+
+    <echo message="[test-core-client]"/>
+	<echo message="Runs the client portion of the test harness for P2P Sockets"/>
+	<echo message=""/>
+
+    <echo message="[httpclient-run]"/>
+	<echo message="Runs the P2P http client"/>
+	<echo message=""/>
+
+    <echo message="[p2pproxy-run]"/>
+	<echo message="Runs the P2P Proxy. See tutorial for full list of arguments"/>
+	<echo message=""/>
+	
+	<echo message="[jspwiki-run]"/>
+	<echo message="Starts up a P2P JSP WikiWiki"/>
+	<echo message=""/>
+
+	<echo message="General information:"/>
+	<echo message="A file named 'build.properties' exists"/>
+	<echo message="in this directory that can be used to"/>
+	<echo message="control the build process."/>
+	<echo message="In particular, an attribute named"/>
+	<echo message="'upload' in that file controls whether"/>
+	<echo message="large files, such as the distributable"/>
+	<echo message="will be uploaded into CVS"/>
+	<echo message=""/>
+	<echo message="To find out how to build P2P Socket's custom ant tasks, type:"/>
+	<echo message="   ant -buildfile build-custom-ant.xml help"/>
+	<echo message=""/>
+	<echo message="Note that you must set a variety of"/>
+	<echo message="shell variables for this build file"/>
+	<echo message="to work correctly; see the README"/>
+	<echo message="file in this directory for details"/>
+  </target>
+  
+</project>

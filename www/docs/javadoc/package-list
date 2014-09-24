@@ -1,0 +1,9 @@
+net.sf.antcontrib.p2psockets
+org.apache.commons.httpclient.protocol
+org.apache.xmlrpc
+org.mortbay.http
+org.mortbay.p2psockets.http
+org.mortbay.p2psockets.jetty
+org.mortbay.p2psockets.util
+org.p2psockets
+org.scache

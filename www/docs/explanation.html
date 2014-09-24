@@ -1,0 +1,95 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <title>The Shaky Steward</title>
+</head>
+<body>
+<h3 align="center">I am the
+Shaky Steward<br>
+or<br>
+An explanation of my actions</h3>
+<p>
+</p>
+<p><b>The
+Comparison</b><br>
+Jesus said of himself, I am the Good Shepherd, because he devotedly
+cares for his flock. <br>
+I on the other hand, have been incommunicado for the last several
+months. P2PSockets was given to me and I did some good work fixing what
+was broken in the core and making it fulfill its stated goals. Then
+some time went by, and I had to prepare for a fairly major surgery. I
+noted the project as unmanaged, had the surgery and got better. Now I'm
+'All livin' as Frosty would say. </p>
+<p><b>The Project</b><br/>
+The current status of the
+p2psockets project is unmanaged. There have been a lot of changes to
+the core since the 1.0 release. These changes attempted to complete the
+stated goals of the code, but in so doing they broke most of the rest
+of the project. P2PSockets has always been distributed with a host of
+modified 'ported' open source net-apps to give example of what p2ps can
+do. Few of these work now, and all of them are very badly out-of-date.
+However, if you just <span style="font-style: italic;">have </span>to
+have jax-rpc over p2ps over jxta, there is a solution.</p>
+<p><b>The Library</b><br>
+I couple of months ago, I made some noise on the jxta dev mailing lists
+about a new and improved implementation of the p2ps goals. <br>
+I had created a library that wraps jxta sockets in real
+java.net.SocketImpl's, and allows us to use them as normal Sockets. I
+also made a launcher app that could start normal java net apps in a
+wrapped-socket environment so they could operate on the jxta network. <br>
+As proof I ran an <em>unmodified</em>
+jetty server in the wrapped-socket environment and viewed its contents
+over the jxta network. <br>
+The library can also be used to very easily create
+normal-socket/jxta-socket proxies, so I modifed a small web proxy app
+(by adding only a single line!) so that it allows normal web browsers
+to view http content hosted on the jxta network. <br>
+Sooooo... I turned on jetty in with wrapped-sockets and started my
+nifty jxtaproxy, set Firefox to use it as a webproxy and away we went.
+I was browsing jetty served content over jxta. <br>
+This was pretty cool, and it made a fair sized splash with the
+community members I shared it with. <br>
+But there was a small problem. </p>
+<p><b>The
+Problem</b><br>
+The problem was communications irregularities. The pages served by
+jetty were slow to download, not because jxta is slow, but because
+there were an enormous number of tcp packet resends. The jxta reliable
+packages aren't very. The socket libraries don't fully implement the
+socket contracts, packets get dropped if <em>this</em>
+happens or if <em>that</em>
+happens. If you close an in-stream, then x starts to happen, but we
+don't send all of the out packets if that happens. <br>
+The jxta socket and reliable libraries work well under 'normal'
+conditions, where a real programmer is directly making calls on the
+object. But when you wrap them in java.net.Socket code, all of the
+features of the socket contract are expected to be fulfilled and to
+work properly. And they don't. <br>
+Soooo..... </p>
+<p><b>The
+Argeement</b><br>
+So, this is where we are now. I would be very pleased to provide my
+library (I've called it jxprox. I know it's lame.) to everyone that is
+interested in using it, <em>if! if</em>
+we can get the jxta socket and reliable packages to fulfill their
+contracts. Right now this is not a high priority for the jxta platform
+developers, because, as I've said, the code works ok for most people. <br>
+So here's the bargain. If you interested parties will <em>politely!</em>
+request that a major upgrade to the jxta.socket package be given high
+priority in the next jxta platform release and see it through to
+completion then I will happily release jxprox. <br>
+Then we can all merrily watch as the world's first p2p web applications
+go online! </p>
+<p><b>Cheers!</b><br>
+A nice place to start would be the jxta dev <a
+ href="mailto:dev@jxta.org">mailing lists.</a>
+<br>
+But remember, Be polite! If you're not you break the agreement. <br>
+<br>
+<em>Alex Lynch<br>
+Project Manager, p2psockets<br>
+</em> <br>
+</p>
+<!--/p-->
+</body>
+</html>

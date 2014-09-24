@@ -1,0 +1,125 @@
+<?xml version="1.0"?>
+<project name="P2PSockets-custom-ant" default="all" basedir=".">
+
+  <!-- ==================================================================== -->
+  <!-- This build file was created to seperate out the building and JARing  -->
+  <!-- of our custom ant tasks.  Since we build our custom tasks and then   -->
+  <!-- put them onto the classpath so that we can use our custom tags, this -->
+  <!-- means we run into ant issue #24945                                   -->
+  <!-- (http://issues.apache.org/bugzilla/show_bug.cgi?id=24945).			-->
+  <!-- The second time we try to compile the class we get file-locking,     -->
+  <!-- which generates an error.  Instead, if any changes are made to our   -->
+  <!-- custom Ant tasks (located in src/java/net/sf/antcontrib/p2psockets), -->
+  <!-- compile and JAR the files first using this build file.               -->
+  <!--																		-->
+  <!-- To run this build file:												-->
+  <!--		ant -buildfile build-custom-ant.xml								-->
+  <!-- ==================================================================== -->
+
+  <!-- ==================================================================== -->
+  <!-- build.xml from Kevin Lahoda's 12-03-2003 version.                    -->
+  <!-- Updated to not need the bootclasspath set, bkn3@columbia.edu			-->
+  <!-- Updated to store common properties and tasks in a seperate include   -->
+  <!-- file, so that apps that use P2P Sockets, such as Paper Airplane, can -->
+  <!-- import this file without having to encode all the JAR files needed.	-->
+  <!-- ==================================================================== -->
+  
+  <!-- ==================================================================== -->
+  <!-- set properties for this build                                        -->
+  <!-- ==================================================================== -->
+  
+	<property environment="env"/>
+
+	<condition property="p2psockets_home"	value="${env.p2psockets_home}">
+          <isset property="env.p2psockets_home"/>
+        </condition>
+        <condition property="p2psockets_home" value="${basedir}">
+            <not>
+                <isset property="env.p2psockets_home"/>
+            </not>
+        </condition>
+        
+
+	<property name="exclude-custom-ant-tasks"		   value="true"/>
+
+	<import file="build_common.xml"/>	  	  		  	  	  	 	  	  	  	  	
+	
+  <!-- ==================================================================== -->
+  <!-- Init the build process	                                            -->
+  <!-- ==================================================================== -->
+  
+  	<target name="osfam">
+  		<osfamily property="os.family"/>
+  			<echo message="${os.family}"/>
+  	</target>	  
+	
+	<target name="init"
+			description="Initializes everything needed for the build and distribution processes">
+		<mkdir dir="${p2psockets.dist.dir}"/>
+		<mkdir dir="${p2psockets.dist.classes}"/>
+		<mkdir dir="${p2psockets.dist.tests}"/>
+		<mkdir dir="${p2psockets.dist.examples}"/>
+		<mkdir dir="${p2psockets.dist.lib}"/>
+	</target>
+	
+  <!-- ==================================================================== -->
+  <!-- Build Targets        	                                            -->
+  <!-- ==================================================================== -->	
+
+	<target name="build-src"
+			description="Compile Java source files in the directory src/java/net/sf/antcontrib/p2psockets">
+		<javac	srcdir="${p2psockets.src.java}/net/sf/antcontrib/p2psockets"
+				destdir="${p2psockets.dist.classes}"
+				debug="on"
+				deprecation="off"
+                                source="1.4">
+				<classpath refid="p2psockets.build-classpath"/> 
+		</javac>
+	</target>
+
+	<target name="build" depends="init,build-src"
+			description="Compile Java source files">
+	</target>
+
+	<target name="ant-custom-jar" depends="build"
+			description="Build our custom ant tasks">
+		<copy file="${p2psockets.src.java}/net/sf/antcontrib/p2psockets/antcontrib.properties" 
+			  todir="${p2psockets.dist.classes}/net/sf/antcontrib/p2psockets"/>
+		<jar	jarfile="${p2psockets-ant-custom.jar}"
+				update="true"
+				basedir="${p2psockets.dist.classes}"
+				includes="net/sf/antcontrib/p2psockets/**"/>
+	</target>
+
+	<target name="jar" depends="ant-custom-jar"
+			description="Builds all of the JARs necessary for our ant extensions">
+	</target>
+	
+  <!-- ==================================================================== -->
+  <!-- Clobber                                                  		    -->
+  <!-- ==================================================================== -->		
+
+	<target name="clobber"
+			description="Deletes old builds">
+		<delete dir="${p2psockets.dist.dir}"/>
+	</target>
+	
+  <!-- ==================================================================== -->
+  <!-- Do it All                                                		    -->
+  <!-- ==================================================================== -->		
+
+	<target name="all" depends="clobber,build,jar"/>
+	
+  <!-- ==================================================================== -->
+  <!-- Help                                                                 -->
+  <!-- ==================================================================== -->
+  
+  <target name="help">
+    <echo message="U S A G E :"/>
+    <echo message="[clobber] - Deletes old builds, **including the P2P Sockets dist directory**"/>
+    <echo message="[build] - Compiles our custom Ant tasks"/>
+    <echo message="[jar] - Builds JAR files for our custom ant tasks"/>
+    <echo message="[all] - Do it All: clobber,build,jar"/>
+  </target>
+  
+</project>
