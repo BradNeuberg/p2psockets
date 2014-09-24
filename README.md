@@ -88,38 +88,38 @@ To find out the version of this release and information about it, see [www/CHANG
 
 ##Contributors
 
-Brad Neuberg
-	* Created P2P Sockets
-	* Initial project management
-	* Architecture and coding
+###Brad Neuberg
+* Created P2P Sockets
+* Initial project management
+* Architecture and coding
 
-Alex Lynch (jxlynch@users.sf.net)
-    * Became project manager after Brad; no longer managing project
-    * Improved reliability
-    * Many bug fixes
+###Alex Lynch (jxlynch@users.sf.net)
+* Became project manager after Brad; no longer managing project
+* Improved reliability
+* Many bug fixes
 
-Mohamed Abdelaziz
-	* Had idea on how to hide JXTA beneath java.net.Socket APIs
-	* Helped with design work on the JXTA Profiler
+###Mohamed Abdelaziz
+* Had idea on how to hide JXTA beneath java.net.Socket APIs
+* Helped with design work on the JXTA Profiler
 
-James Todd
-	* Project Management
-	* ext:config design and coding
-	* Helped with design work on the JXTA Profiler
-	* Refactored JXTA Profiler and integrated it back into JXTA
+###James Todd
+* Project Management
+* ext:config design and coding
+* Helped with design work on the JXTA Profiler
+* Refactored JXTA Profiler and integrated it back into JXTA
 
-Kevin Lahoda
-	* Did a huge build system overhaul
-	* Bug testing
+###Kevin Lahoda
+* Did a huge build system overhaul
+* Bug testing
 
-Jean-Christophe Hugly
-	* Helped with design work on the JXTA Profiler
+###Jean-Christophe Hugly
+* Helped with design work on the JXTA Profiler
 
-Vikas Sodhani
-	* Bug testing
+###Vikas Sodhani
+* Bug testing
 
-John Mitchell (jfm_NO_SPAM_SPAM_IS_EVIL@minioak.com)
-	* Submitted bug patch for P2PNetwork class
+###John Mitchell (jfm_NO_SPAM_SPAM_IS_EVIL@minioak.com)
+* Submitted bug patch for P2PNetwork class
 
 ##Building
 
